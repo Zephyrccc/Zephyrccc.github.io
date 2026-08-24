@@ -1,0 +1,1517 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>DES | Zephyr's Repository</title><meta name="author" content="Zephyr"><meta name="copyright" content="Zephyr"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="DES简介DES算法，又被称为美国数据加密标准，是1972年美国IBM公司研制的对称密码体制加密算法DES算法属于对称加密算法，加密解密公用一套算法。明文按64位进行分组，密钥长64位但实际上只56位参与DES运算（第8、16、24、32、40、48、56、64位是奇偶校验位）分组后的明文组和56位的密钥按位替代或交换的方法形成密文组的加密方法。 DES的基本结构DES为分组密码，分组密码也就是把">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DES">
+<meta property="og:url" content="https://blog.z3phyr.site/posts/DES.html">
+<meta property="og:site_name" content="Zephyr&#39;s Repository">
+<meta property="og:description" content="DES简介DES算法，又被称为美国数据加密标准，是1972年美国IBM公司研制的对称密码体制加密算法DES算法属于对称加密算法，加密解密公用一套算法。明文按64位进行分组，密钥长64位但实际上只56位参与DES运算（第8、16、24、32、40、48、56、64位是奇偶校验位）分组后的明文组和56位的密钥按位替代或交换的方法形成密文组的加密方法。 DES的基本结构DES为分组密码，分组密码也就是把">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.z3phyr.site/img/avatar.png">
+<meta property="article:published_time" content="2022-07-11T01:33:14.000Z">
+<meta property="article:modified_time" content="2022-07-11T01:33:14.000Z">
+<meta property="article:author" content="Zephyr">
+<meta property="article:tag" content="DES">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.z3phyr.site/img/avatar.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "DES",
+  "url": "https://blog.z3phyr.site/posts/DES.html",
+  "image": "https://blog.z3phyr.site/img/avatar.png",
+  "datePublished": "2022-07-11T01:33:14.000Z",
+  "dateModified": "2022-07-11T01:33:14.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Zephyr",
+      "url": "https://blog.z3phyr.site"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://blog.z3phyr.site/posts/DES.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//static.cloudflareinsights.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.2.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script defer="defer" data-pjax="data-pjax" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon="{&quot;token&quot;: &quot;bb47dbec9d394a07a3a5d0e80124d805&quot;}"></script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":false,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'medium_zoom',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-center"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'DES',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.2"></head><body><div class="bg-animation" id="web_bg" style="background-image: url(/img/default-img.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/loading.gif" data-lazy-src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">120</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">46</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-file"></i><span> 笔记</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E7%AC%94%E8%AE%B0/Pwn/"><i class="fa-fw fas fa-square-binary"></i><span> Pwn</span></a></li><li><a class="site-page child" href="/categories/%E7%AC%94%E8%AE%B0/Web/"><i class="fa-fw fas fa-globe"></i><span> Web</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-code"></i><span> 技术</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E6%8A%80%E6%9C%AF/Pwn/"><i class="fa-fw fas fa-square-binary"></i><span> Pwn</span></a></li><li><a class="site-page child" href="/categories/%E6%8A%80%E6%9C%AF/Web/"><i class="fa-fw fas fa-globe"></i><span> Web</span></a></li><li><a class="site-page child" href="/categories/%E6%8A%80%E6%9C%AF/Crypto/"><i class="fa-fw fas fa-key"></i><span> Crypto</span></a></li><li><a class="site-page child" href="/categories/%E6%8A%80%E6%9C%AF/%E7%AD%89%E4%BF%9D/"><i class="fa-fw fas fa-shield-alt"></i><span> 等保</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 索引</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/talking/"><i class="fa-fw fas fa-pen-nib"></i><span> 说说</span></a></li><li><a class="site-page child" href="/favorites/"><i class="fa-fw fas fa-bookmark"></i><span> 收藏</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" href="/messageboard/"><i class="fa-fw fas fa-comment"></i><span> 留言板</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/default-img.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Zephyr's Repository</span></a><a class="nav-page-title" href="/"><span class="site-name">DES</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-file"></i><span> 笔记</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E7%AC%94%E8%AE%B0/Pwn/"><i class="fa-fw fas fa-square-binary"></i><span> Pwn</span></a></li><li><a class="site-page child" href="/categories/%E7%AC%94%E8%AE%B0/Web/"><i class="fa-fw fas fa-globe"></i><span> Web</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-code"></i><span> 技术</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E6%8A%80%E6%9C%AF/Pwn/"><i class="fa-fw fas fa-square-binary"></i><span> Pwn</span></a></li><li><a class="site-page child" href="/categories/%E6%8A%80%E6%9C%AF/Web/"><i class="fa-fw fas fa-globe"></i><span> Web</span></a></li><li><a class="site-page child" href="/categories/%E6%8A%80%E6%9C%AF/Crypto/"><i class="fa-fw fas fa-key"></i><span> Crypto</span></a></li><li><a class="site-page child" href="/categories/%E6%8A%80%E6%9C%AF/%E7%AD%89%E4%BF%9D/"><i class="fa-fw fas fa-shield-alt"></i><span> 等保</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 索引</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/talking/"><i class="fa-fw fas fa-pen-nib"></i><span> 说说</span></a></li><li><a class="site-page child" href="/favorites/"><i class="fa-fw fas fa-bookmark"></i><span> 收藏</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" href="/messageboard/"><i class="fa-fw fas fa-comment"></i><span> 留言板</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">DES</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-07-11T01:33:14.000Z" title="发表于 2022-07-11 09:33:14">2022-07-11</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-07-11T01:33:14.000Z" title="更新于 2022-07-11 09:33:14">2022-07-11</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF/Crypto/">Crypto</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">2.6k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>11分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="DES"><a href="#DES" class="headerlink" title="DES"></a>DES</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>DES算法，又被称为美国数据加密标准，是1972年美国IBM公司研制的对称密码体制加密算法DES算法属于对称加密算法，加密解密公用一套算法。明文按64位进行分组，密钥长64位但实际上只56位参与DES运算（第8、16、24、32、40、48、56、64位是奇偶校验位）分组后的明文组和56位的密钥按位替代或交换的方法形成密文组的加密方法。</p>
+<h2 id="DES的基本结构"><a href="#DES的基本结构" class="headerlink" title="DES的基本结构"></a>DES的基本结构</h2><p>DES为分组密码，分组密码也就是把明文分成一组一组的，每组长度相等，每次加密一组数据，直到加密完整个明文。在DES标准规范中，分组长度只能是64比特</p>
+<h2 id="算法原理"><a href="#算法原理" class="headerlink" title="算法原理"></a>算法原理</h2><p>DES算法的主要流程如下图所示</p>
+<p><img src="/img/loading.gif" data-lazy-src="https://cdn.jsdelivr.net/gh/Zephyrccc/static-resources/blog/images/webp/DES_01.webp" alt="DES_01"></p>
+<h3 id="加密"><a href="#加密" class="headerlink" title="加密"></a>加密</h3><h4 id="IP置换"><a href="#IP置换" class="headerlink" title="IP置换"></a>IP置换</h4><p>IP置换目的是将输入的64位数据块按位重新组合，并把输出分为L0、R0两部分，每部分各长32位。</p>
+<p>置换规则如下表所示：</p>
+<table>
+<thead>
+<tr>
+<th align="center">58</th>
+<th align="center">50</th>
+<th align="center">42</th>
+<th align="center">34</th>
+<th align="center">26</th>
+<th align="center">18</th>
+<th align="center">10</th>
+<th align="center">2</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">60</td>
+<td align="center">52</td>
+<td align="center">44</td>
+<td align="center">36</td>
+<td align="center">28</td>
+<td align="center">20</td>
+<td align="center">12</td>
+<td align="center">4</td>
+</tr>
+<tr>
+<td align="center">62</td>
+<td align="center">54</td>
+<td align="center">46</td>
+<td align="center">38</td>
+<td align="center">30</td>
+<td align="center">22</td>
+<td align="center">14</td>
+<td align="center">6</td>
+</tr>
+<tr>
+<td align="center">64</td>
+<td align="center">56</td>
+<td align="center">48</td>
+<td align="center">40</td>
+<td align="center">32</td>
+<td align="center">24</td>
+<td align="center">16</td>
+<td align="center">8</td>
+</tr>
+<tr>
+<td align="center">57</td>
+<td align="center">49</td>
+<td align="center">41</td>
+<td align="center">33</td>
+<td align="center">25</td>
+<td align="center">17</td>
+<td align="center">9</td>
+<td align="center">1</td>
+</tr>
+<tr>
+<td align="center">59</td>
+<td align="center">51</td>
+<td align="center">43</td>
+<td align="center">35</td>
+<td align="center">27</td>
+<td align="center">19</td>
+<td align="center">11</td>
+<td align="center">3</td>
+</tr>
+<tr>
+<td align="center">61</td>
+<td align="center">53</td>
+<td align="center">45</td>
+<td align="center">37</td>
+<td align="center">29</td>
+<td align="center">21</td>
+<td align="center">13</td>
+<td align="center">5</td>
+</tr>
+<tr>
+<td align="center">63</td>
+<td align="center">55</td>
+<td align="center">47</td>
+<td align="center">39</td>
+<td align="center">31</td>
+<td align="center">23</td>
+<td align="center">15</td>
+<td align="center">7</td>
+</tr>
+</tbody></table>
+<p>表中的数字代表新数据中此位置的数据在原数据中的位置，即原数据块的第58位放到新数据的第1位，第50位放到第2位，……依此类推，第7位放到第64位。置换后的数据分为L0和R0两部分，L0为新数据的左32位，R0为新数据的右32位。要注意一点，位数是从左边开始数的，即最0x0000 0080 0000 0002最左边的位为1，最右边的位为64</p>
+<h4 id="密钥置换"><a href="#密钥置换" class="headerlink" title="密钥置换"></a>密钥置换</h4><p>不考虑每个字节的第8位，DES的密钥由64位减至56位，每个字节的第8位作为奇偶校验位。产生的56位密钥由下表生成（注意表中没有8，16，24，32，40，48，56和64这8位）：</p>
+<table>
+<thead>
+<tr>
+<th align="center">57</th>
+<th align="center">49</th>
+<th align="center">41</th>
+<th align="center">33</th>
+<th align="center">25</th>
+<th align="center">17</th>
+<th align="center">9</th>
+<th align="center">1</th>
+<th align="center">58</th>
+<th align="center">50</th>
+<th align="center">42</th>
+<th align="center">34</th>
+<th align="center">26</th>
+<th align="center">18</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">10</td>
+<td align="center">2</td>
+<td align="center">59</td>
+<td align="center">51</td>
+<td align="center">43</td>
+<td align="center">35</td>
+<td align="center">27</td>
+<td align="center">19</td>
+<td align="center">11</td>
+<td align="center">3</td>
+<td align="center">60</td>
+<td align="center">52</td>
+<td align="center">44</td>
+<td align="center">36</td>
+</tr>
+<tr>
+<td align="center">63</td>
+<td align="center">55</td>
+<td align="center">47</td>
+<td align="center">39</td>
+<td align="center">31</td>
+<td align="center">23</td>
+<td align="center">15</td>
+<td align="center">7</td>
+<td align="center">62</td>
+<td align="center">54</td>
+<td align="center">46</td>
+<td align="center">38</td>
+<td align="center">30</td>
+<td align="center">22</td>
+</tr>
+<tr>
+<td align="center">14</td>
+<td align="center">6</td>
+<td align="center">61</td>
+<td align="center">53</td>
+<td align="center">45</td>
+<td align="center">37</td>
+<td align="center">29</td>
+<td align="center">21</td>
+<td align="center">13</td>
+<td align="center">5</td>
+<td align="center">28</td>
+<td align="center">20</td>
+<td align="center">12</td>
+<td align="center">4</td>
+</tr>
+</tbody></table>
+<p>在DES的每一轮中，从56位密钥产生出不同的48位子密钥，确定这些子密钥的方式如下：</p>
+<ul>
+<li><p>将56位的密钥分成两部分，每部分28位</p>
+</li>
+<li><p>根据轮数，这两部分分别循环左移1位或2位。每轮移动的位数如下表：</p>
+<table>
+<thead>
+<tr>
+<th align="center">轮数</th>
+<th align="center">1</th>
+<th align="center">2</th>
+<th align="center">3</th>
+<th>4</th>
+<th align="center">5</th>
+<th align="center">6</th>
+<th align="center">7</th>
+<th align="center">8</th>
+<th align="center">9</th>
+<th align="center">10</th>
+<th align="center">11</th>
+<th align="center">12</th>
+<th align="center">13</th>
+<th align="center">14</th>
+<th align="center">15</th>
+<th align="center">16</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">位数</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">2</td>
+<td>2</td>
+<td align="center">2</td>
+<td align="center">2</td>
+<td align="center">2</td>
+<td align="center">2</td>
+<td align="center">1</td>
+<td align="center">2</td>
+<td align="center">2</td>
+<td align="center">2</td>
+<td align="center">2</td>
+<td align="center">2</td>
+<td align="center">2</td>
+<td align="center">1</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+<p>移动后，从56位中选出48位。这个过程中，既置换了每位的顺序，又选择了子密钥，因此称为压缩置换。压缩置换规则如下表（注意表中没有9，18，22，25，35，38，43和54这8位）：</p>
+<table>
+<thead>
+<tr>
+<th align="center">14</th>
+<th align="center">17</th>
+<th align="center">11</th>
+<th align="center">24</th>
+<th align="center">1</th>
+<th align="center">5</th>
+<th align="center">3</th>
+<th align="center">28</th>
+<th align="center">15</th>
+<th align="center">6</th>
+<th align="center">21</th>
+<th align="center">10</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">23</td>
+<td align="center">19</td>
+<td align="center">12</td>
+<td align="center">4</td>
+<td align="center">26</td>
+<td align="center">8</td>
+<td align="center">16</td>
+<td align="center">7</td>
+<td align="center">27</td>
+<td align="center">20</td>
+<td align="center">13</td>
+<td align="center">2</td>
+</tr>
+<tr>
+<td align="center">41</td>
+<td align="center">52</td>
+<td align="center">31</td>
+<td align="center">37</td>
+<td align="center">47</td>
+<td align="center">55</td>
+<td align="center">30</td>
+<td align="center">40</td>
+<td align="center">51</td>
+<td align="center">45</td>
+<td align="center">33</td>
+<td align="center">48</td>
+</tr>
+<tr>
+<td align="center">44</td>
+<td align="center">49</td>
+<td align="center">39</td>
+<td align="center">56</td>
+<td align="center">34</td>
+<td align="center">53</td>
+<td align="center">46</td>
+<td align="center">42</td>
+<td align="center">50</td>
+<td align="center">36</td>
+<td align="center">29</td>
+<td align="center">32</td>
+</tr>
+</tbody></table>
+<p>置换方法同上</p>
+<h4 id="E扩展置换"><a href="#E扩展置换" class="headerlink" title="E扩展置换"></a>E扩展置换</h4><ul>
+<li>扩展置置换目标是IP置换后获得的右半部分R0，将32位输入扩展为48位(分为4位×8组)输出</li>
+<li>扩展置换目的有两个：生成与密钥相同长度的数据以进行异或运算；提供更长的结果，在后续的替代运算中可以进行压缩</li>
+<li>扩展置换原理如下表：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">32</th>
+<th align="center">1</th>
+<th align="center">2</th>
+<th align="center">3</th>
+<th align="center">4</th>
+<th align="center">5</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">4</td>
+<td align="center">5</td>
+<td align="center">6</td>
+<td align="center">7</td>
+<td align="center">8</td>
+<td align="center">9</td>
+</tr>
+<tr>
+<td align="center">8</td>
+<td align="center">9</td>
+<td align="center">10</td>
+<td align="center">11</td>
+<td align="center">12</td>
+<td align="center">13</td>
+</tr>
+<tr>
+<td align="center">12</td>
+<td align="center">13</td>
+<td align="center">14</td>
+<td align="center">15</td>
+<td align="center">16</td>
+<td align="center">17</td>
+</tr>
+<tr>
+<td align="center">16</td>
+<td align="center">17</td>
+<td align="center">18</td>
+<td align="center">19</td>
+<td align="center">20</td>
+<td align="center">21</td>
+</tr>
+<tr>
+<td align="center">20</td>
+<td align="center">21</td>
+<td align="center">22</td>
+<td align="center">23</td>
+<td align="center">24</td>
+<td align="center">25</td>
+</tr>
+<tr>
+<td align="center">24</td>
+<td align="center">25</td>
+<td align="center">26</td>
+<td align="center">27</td>
+<td align="center">28</td>
+<td align="center">29</td>
+</tr>
+<tr>
+<td align="center">28</td>
+<td align="center">29</td>
+<td align="center">30</td>
+<td align="center">31</td>
+<td align="center">32</td>
+<td align="center">1</td>
+</tr>
+</tbody></table>
+<ul>
+<li>表中的数字代表位，第一列盒最后一列数据是扩展的数据，可以看出，扩展的数据是从相邻两组分别取靠近的一位，4位变为6位。靠近32位的位为1，靠近1位的位为32。表中第二行的4取自上组中的末位，9取自下组中的首位</li>
+<li>我们举个例子看一下(虽然扩展置换针对的是上步IP置换中的R0，但为便于观察扩展，这里不取R0举例)：</li>
+<li>输入数据0x1081 1001，转换为二进制就是0001 0000 1000 0001B，按照上表扩展得下表</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">1</th>
+<th align="center">0</th>
+<th align="center">0</th>
+<th align="center">0</th>
+<th align="center">1</th>
+<th align="center">0</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">1</td>
+</tr>
+<tr>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">0</td>
+</tr>
+</tbody></table>
+<ul>
+<li>表中的第一列和最后一列数据是从临近的上下组取得的，二进制为1000 1010 0001 0100 0000 0010 1000 1010 0000 0000 0000 0010B，转换为十六进制0x8A14 028A 0002</li>
+<li>扩展置换之后，右半部分数据R0变为48位，与密钥置换得到的轮密钥进行异或。</li>
+</ul>
+<h4 id="S盒替换"><a href="#S盒替换" class="headerlink" title="S盒替换"></a>S盒替换</h4><p>压缩后的密钥与扩展分组异或以后得到48位的数据，将这个数据送人S盒，进行替代运算。替代由8个不同的S盒完成，每个S盒有6位输入4位输出。48位输入分为8个6位的分组，一个分组对应一个S盒，对应的S盒对各组进行代替操作</p>
+<p><img src="/img/loading.gif" data-lazy-src="https://cdn.jsdelivr.net/gh/Zephyrccc/static-resources/blog/images/webp/DES_02.webp" alt="DES_02"></p>
+<p>一个S盒就是一个4行16列的表，盒中的每一项都是一个4位的数。S盒的6个输入确定了其对应的输出在哪一行哪一列，输入的高低两位做为行数H，中间四位做为列数L，在S-BOX中查找第H行L列对应的数据(&lt;32)。</p>
+<p>8个S盒如下</p>
+<p>S盒1：</p>
+<table>
+<thead>
+<tr>
+<th align="center">14</th>
+<th align="center">4</th>
+<th align="center">13</th>
+<th align="center">1</th>
+<th align="center">2</th>
+<th align="center">15</th>
+<th align="center">11</th>
+<th align="center">8</th>
+<th align="center">3</th>
+<th align="center">10</th>
+<th align="center">6</th>
+<th align="center">12</th>
+<th align="center">5</th>
+<th align="center">9</th>
+<th align="center">0</th>
+<th align="center">7</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">0</td>
+<td align="center">15</td>
+<td align="center">7</td>
+<td align="center">4</td>
+<td align="center">14</td>
+<td align="center">2</td>
+<td align="center">13</td>
+<td align="center">1</td>
+<td align="center">10</td>
+<td align="center">6</td>
+<td align="center">12</td>
+<td align="center">11</td>
+<td align="center">9</td>
+<td align="center">5</td>
+<td align="center">3</td>
+<td align="center">8</td>
+</tr>
+<tr>
+<td align="center">4</td>
+<td align="center">1</td>
+<td align="center">14</td>
+<td align="center">8</td>
+<td align="center">13</td>
+<td align="center">6</td>
+<td align="center">2</td>
+<td align="center">11</td>
+<td align="center">15</td>
+<td align="center">12</td>
+<td align="center">9</td>
+<td align="center">7</td>
+<td align="center">3</td>
+<td align="center">10</td>
+<td align="center">5</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">15</td>
+<td align="center">12</td>
+<td align="center">8</td>
+<td align="center">2</td>
+<td align="center">4</td>
+<td align="center">9</td>
+<td align="center">1</td>
+<td align="center">7</td>
+<td align="center">5</td>
+<td align="center">11</td>
+<td align="center">3</td>
+<td align="center">14</td>
+<td align="center">10</td>
+<td align="center">0</td>
+<td align="center">6</td>
+<td align="center">13</td>
+</tr>
+</tbody></table>
+<p>S盒2：</p>
+<table>
+<thead>
+<tr>
+<th align="center">15</th>
+<th align="center">1</th>
+<th align="center">8</th>
+<th align="center">14</th>
+<th align="center">6</th>
+<th align="center">11</th>
+<th align="center">3</th>
+<th align="center">4</th>
+<th align="center">9</th>
+<th align="center">7</th>
+<th align="center">2</th>
+<th align="center">13</th>
+<th align="center">12</th>
+<th align="center">0</th>
+<th align="center">5</th>
+<th align="center">10</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">3</td>
+<td align="center">13</td>
+<td align="center">4</td>
+<td align="center">7</td>
+<td align="center">15</td>
+<td align="center">2</td>
+<td align="center">8</td>
+<td align="center">14</td>
+<td align="center">12</td>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">10</td>
+<td align="center">6</td>
+<td align="center">9</td>
+<td align="center">11</td>
+<td align="center">5</td>
+</tr>
+<tr>
+<td align="center">0</td>
+<td align="center">14</td>
+<td align="center">7</td>
+<td align="center">11</td>
+<td align="center">10</td>
+<td align="center">4</td>
+<td align="center">13</td>
+<td align="center">1</td>
+<td align="center">5</td>
+<td align="center">8</td>
+<td align="center">12</td>
+<td align="center">6</td>
+<td align="center">9</td>
+<td align="center">3</td>
+<td align="center">2</td>
+<td align="center">15</td>
+</tr>
+<tr>
+<td align="center">13</td>
+<td align="center">8</td>
+<td align="center">10</td>
+<td align="center">1</td>
+<td align="center">3</td>
+<td align="center">15</td>
+<td align="center">4</td>
+<td align="center">2</td>
+<td align="center">11</td>
+<td align="center">6</td>
+<td align="center">7</td>
+<td align="center">12</td>
+<td align="center">0</td>
+<td align="center">5</td>
+<td align="center">14</td>
+<td align="center">9</td>
+</tr>
+</tbody></table>
+<p>S盒3：</p>
+<table>
+<thead>
+<tr>
+<th align="center">10</th>
+<th align="center">0</th>
+<th align="center">9</th>
+<th align="center">14</th>
+<th align="center">6</th>
+<th align="center">3</th>
+<th align="center">15</th>
+<th align="center">5</th>
+<th align="center">1</th>
+<th align="center">13</th>
+<th align="center">12</th>
+<th align="center">7</th>
+<th align="center">11</th>
+<th align="center">4</th>
+<th align="center">2</th>
+<th align="center">8</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">13</td>
+<td align="center">7</td>
+<td align="center">0</td>
+<td align="center">9</td>
+<td align="center">3</td>
+<td align="center">4</td>
+<td align="center">6</td>
+<td align="center">10</td>
+<td align="center">2</td>
+<td align="center">8</td>
+<td align="center">5</td>
+<td align="center">14</td>
+<td align="center">12</td>
+<td align="center">11</td>
+<td align="center">15</td>
+<td align="center">1</td>
+</tr>
+<tr>
+<td align="center">13</td>
+<td align="center">6</td>
+<td align="center">4</td>
+<td align="center">9</td>
+<td align="center">8</td>
+<td align="center">15</td>
+<td align="center">3</td>
+<td align="center">0</td>
+<td align="center">11</td>
+<td align="center">1</td>
+<td align="center">2</td>
+<td align="center">12</td>
+<td align="center">5</td>
+<td align="center">10</td>
+<td align="center">14</td>
+<td align="center">7</td>
+</tr>
+<tr>
+<td align="center">1</td>
+<td align="center">10</td>
+<td align="center">13</td>
+<td align="center">0</td>
+<td align="center">6</td>
+<td align="center">9</td>
+<td align="center">8</td>
+<td align="center">7</td>
+<td align="center">4</td>
+<td align="center">15</td>
+<td align="center">14</td>
+<td align="center">3</td>
+<td align="center">11</td>
+<td align="center">5</td>
+<td align="center">2</td>
+<td align="center">12</td>
+</tr>
+</tbody></table>
+<p>S盒4：</p>
+<table>
+<thead>
+<tr>
+<th align="center">7</th>
+<th align="center">13</th>
+<th align="center">14</th>
+<th align="center">3</th>
+<th align="center">0</th>
+<th align="center">6</th>
+<th align="center">9</th>
+<th align="center">10</th>
+<th align="center">1</th>
+<th align="center">2</th>
+<th align="center">8</th>
+<th align="center">5</th>
+<th align="center">11</th>
+<th align="center">12</th>
+<th align="center">4</th>
+<th align="center">15</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">13</td>
+<td align="center">8</td>
+<td align="center">11</td>
+<td align="center">5</td>
+<td align="center">6</td>
+<td align="center">15</td>
+<td align="center">0</td>
+<td align="center">3</td>
+<td align="center">4</td>
+<td align="center">7</td>
+<td align="center">2</td>
+<td align="center">12</td>
+<td align="center">1</td>
+<td align="center">10</td>
+<td align="center">14</td>
+<td align="center">19</td>
+</tr>
+<tr>
+<td align="center">10</td>
+<td align="center">6</td>
+<td align="center">9</td>
+<td align="center">0</td>
+<td align="center">12</td>
+<td align="center">11</td>
+<td align="center">7</td>
+<td align="center">13</td>
+<td align="center">15</td>
+<td align="center">1</td>
+<td align="center">3</td>
+<td align="center">14</td>
+<td align="center">5</td>
+<td align="center">2</td>
+<td align="center">8</td>
+<td align="center">4</td>
+</tr>
+<tr>
+<td align="center">3</td>
+<td align="center">15</td>
+<td align="center">0</td>
+<td align="center">6</td>
+<td align="center">10</td>
+<td align="center">1</td>
+<td align="center">13</td>
+<td align="center">8</td>
+<td align="center">9</td>
+<td align="center">4</td>
+<td align="center">5</td>
+<td align="center">11</td>
+<td align="center">12</td>
+<td align="center">7</td>
+<td align="center">2</td>
+<td align="center">14</td>
+</tr>
+</tbody></table>
+<p>S盒5：</p>
+<table>
+<thead>
+<tr>
+<th align="center">2</th>
+<th align="center">12</th>
+<th align="center">4</th>
+<th align="center">1</th>
+<th align="center">7</th>
+<th align="center">10</th>
+<th align="center">11</th>
+<th align="center">6</th>
+<th align="center">5</th>
+<th align="center">8</th>
+<th align="center">3</th>
+<th align="center">15</th>
+<th align="center">13</th>
+<th align="center">0</th>
+<th align="center">14</th>
+<th align="center">9</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">14</td>
+<td align="center">11</td>
+<td align="center">2</td>
+<td align="center">12</td>
+<td align="center">4</td>
+<td align="center">7</td>
+<td align="center">13</td>
+<td align="center">1</td>
+<td align="center">5</td>
+<td align="center">0</td>
+<td align="center">15</td>
+<td align="center">13</td>
+<td align="center">3</td>
+<td align="center">9</td>
+<td align="center">8</td>
+<td align="center">6</td>
+</tr>
+<tr>
+<td align="center">4</td>
+<td align="center">2</td>
+<td align="center">1</td>
+<td align="center">11</td>
+<td align="center">10</td>
+<td align="center">13</td>
+<td align="center">7</td>
+<td align="center">8</td>
+<td align="center">15</td>
+<td align="center">9</td>
+<td align="center">12</td>
+<td align="center">5</td>
+<td align="center">6</td>
+<td align="center">3</td>
+<td align="center">0</td>
+<td align="center">14</td>
+</tr>
+<tr>
+<td align="center">11</td>
+<td align="center">8</td>
+<td align="center">12</td>
+<td align="center">7</td>
+<td align="center">1</td>
+<td align="center">14</td>
+<td align="center">2</td>
+<td align="center">13</td>
+<td align="center">6</td>
+<td align="center">15</td>
+<td align="center">0</td>
+<td align="center">9</td>
+<td align="center">10</td>
+<td align="center">4</td>
+<td align="center">5</td>
+<td align="center">3</td>
+</tr>
+</tbody></table>
+<p>S盒6：</p>
+<table>
+<thead>
+<tr>
+<th align="center">12</th>
+<th align="center">1</th>
+<th align="center">10</th>
+<th align="center">15</th>
+<th align="center">9</th>
+<th align="center">2</th>
+<th align="center">6</th>
+<th align="center">8</th>
+<th align="center">0</th>
+<th align="center">13</th>
+<th align="center">3</th>
+<th align="center">4</th>
+<th align="center">14</th>
+<th align="center">7</th>
+<th align="center">5</th>
+<th align="center">11</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">10</td>
+<td align="center">15</td>
+<td align="center">4</td>
+<td align="center">2</td>
+<td align="center">7</td>
+<td align="center">12</td>
+<td align="center">9</td>
+<td align="center">5</td>
+<td align="center">6</td>
+<td align="center">1</td>
+<td align="center">13</td>
+<td align="center">14</td>
+<td align="center">0</td>
+<td align="center">11</td>
+<td align="center">3</td>
+<td align="center">8</td>
+</tr>
+<tr>
+<td align="center">9</td>
+<td align="center">14</td>
+<td align="center">15</td>
+<td align="center">5</td>
+<td align="center">2</td>
+<td align="center">8</td>
+<td align="center">12</td>
+<td align="center">3</td>
+<td align="center">7</td>
+<td align="center">0</td>
+<td align="center">4</td>
+<td align="center">10</td>
+<td align="center">1</td>
+<td align="center">13</td>
+<td align="center">11</td>
+<td align="center">6</td>
+</tr>
+<tr>
+<td align="center">4</td>
+<td align="center">3</td>
+<td align="center">2</td>
+<td align="center">12</td>
+<td align="center">9</td>
+<td align="center">5</td>
+<td align="center">15</td>
+<td align="center">10</td>
+<td align="center">11</td>
+<td align="center">14</td>
+<td align="center">1</td>
+<td align="center">7</td>
+<td align="center">6</td>
+<td align="center">0</td>
+<td align="center">8</td>
+<td align="center">13</td>
+</tr>
+</tbody></table>
+<p>S盒7：</p>
+<table>
+<thead>
+<tr>
+<th align="center">4</th>
+<th align="center">11</th>
+<th align="center">2</th>
+<th align="center">14</th>
+<th align="center">15</th>
+<th align="center">0</th>
+<th align="center">8</th>
+<th align="center">13</th>
+<th align="center">3</th>
+<th align="center">12</th>
+<th align="center">9</th>
+<th align="center">7</th>
+<th align="center">5</th>
+<th align="center">10</th>
+<th align="center">6</th>
+<th align="center">1</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">13</td>
+<td align="center">0</td>
+<td align="center">11</td>
+<td align="center">7</td>
+<td align="center">4</td>
+<td align="center">9</td>
+<td align="center">1</td>
+<td align="center">10</td>
+<td align="center">14</td>
+<td align="center">3</td>
+<td align="center">5</td>
+<td align="center">12</td>
+<td align="center">2</td>
+<td align="center">15</td>
+<td align="center">8</td>
+<td align="center">6</td>
+</tr>
+<tr>
+<td align="center">1</td>
+<td align="center">4</td>
+<td align="center">11</td>
+<td align="center">13</td>
+<td align="center">12</td>
+<td align="center">3</td>
+<td align="center">7</td>
+<td align="center">14</td>
+<td align="center">10</td>
+<td align="center">15</td>
+<td align="center">6</td>
+<td align="center">8</td>
+<td align="center">0</td>
+<td align="center">5</td>
+<td align="center">9</td>
+<td align="center">2</td>
+</tr>
+<tr>
+<td align="center">6</td>
+<td align="center">11</td>
+<td align="center">13</td>
+<td align="center">8</td>
+<td align="center">1</td>
+<td align="center">4</td>
+<td align="center">10</td>
+<td align="center">7</td>
+<td align="center">9</td>
+<td align="center">5</td>
+<td align="center">0</td>
+<td align="center">15</td>
+<td align="center">14</td>
+<td align="center">2</td>
+<td align="center">3</td>
+<td align="center">12</td>
+</tr>
+</tbody></table>
+<p>S盒8：</p>
+<table>
+<thead>
+<tr>
+<th align="center">13</th>
+<th align="center">2</th>
+<th align="center">8</th>
+<th align="center">4</th>
+<th align="center">6</th>
+<th align="center">15</th>
+<th align="center">11</th>
+<th align="center">1</th>
+<th align="center">10</th>
+<th align="center">9</th>
+<th align="center">3</th>
+<th align="center">14</th>
+<th align="center">5</th>
+<th align="center">0</th>
+<th align="center">12</th>
+<th align="center">7</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">1</td>
+<td align="center">15</td>
+<td align="center">13</td>
+<td align="center">8</td>
+<td align="center">10</td>
+<td align="center">3</td>
+<td align="center">7</td>
+<td align="center">4</td>
+<td align="center">12</td>
+<td align="center">5</td>
+<td align="center">6</td>
+<td align="center">11</td>
+<td align="center">0</td>
+<td align="center">14</td>
+<td align="center">9</td>
+<td align="center">2</td>
+</tr>
+<tr>
+<td align="center">7</td>
+<td align="center">11</td>
+<td align="center">4</td>
+<td align="center">1</td>
+<td align="center">9</td>
+<td align="center">12</td>
+<td align="center">14</td>
+<td align="center">2</td>
+<td align="center">0</td>
+<td align="center">6</td>
+<td align="center">10</td>
+<td align="center">13</td>
+<td align="center">15</td>
+<td align="center">3</td>
+<td align="center">5</td>
+<td align="center">8</td>
+</tr>
+<tr>
+<td align="center">2</td>
+<td align="center">1</td>
+<td align="center">14</td>
+<td align="center">7</td>
+<td align="center">4</td>
+<td align="center">10</td>
+<td align="center">8</td>
+<td align="center">13</td>
+<td align="center">15</td>
+<td align="center">12</td>
+<td align="center">9</td>
+<td align="center">0</td>
+<td align="center">3</td>
+<td align="center">5</td>
+<td align="center">6</td>
+<td align="center">11</td>
+</tr>
+</tbody></table>
+<ul>
+<li>例如，假设S盒8的输入为110011，第1位和第6位组合为11，对应于S盒8的第3行；第2位到第5位为1001，对应于S盒8的第9列。S盒8的第3行第9列的数字为12，因此用1100来代替110011。注意，S盒的行列计数都是从0开始</li>
+<li>代替过程产生8个4位的分组，组合在一起形成32位数据</li>
+<li>S盒代替时DES算法的关键步骤，所有的其他的运算都是线性的，易于分析，而S盒是非线性的，相比于其他步骤，提供了更好安全性。</li>
+</ul>
+<h4 id="P盒置换"><a href="#P盒置换" class="headerlink" title="P盒置换"></a>P盒置换</h4><p>S盒代替运算的32位输出按照P盒进行置换。该置换把输入的每位映射到输出位，任何一位不能被映射两次，也不能被略去，映射规则如下表：</p>
+<table>
+<thead>
+<tr>
+<th align="center">16</th>
+<th align="center">7</th>
+<th align="center">20</th>
+<th align="center">21</th>
+<th align="center">29</th>
+<th align="center">12</th>
+<th align="center">28</th>
+<th align="center">17</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">1</td>
+<td align="center">15</td>
+<td align="center">23</td>
+<td align="center">26</td>
+<td align="center">5</td>
+<td align="center">18</td>
+<td align="center">31</td>
+<td align="center">10</td>
+</tr>
+<tr>
+<td align="center">2</td>
+<td align="center">8</td>
+<td align="center">24</td>
+<td align="center">14</td>
+<td align="center">32</td>
+<td align="center">27</td>
+<td align="center">3</td>
+<td align="center">9</td>
+</tr>
+<tr>
+<td align="center">19</td>
+<td align="center">13</td>
+<td align="center">30</td>
+<td align="center">6</td>
+<td align="center">22</td>
+<td align="center">11</td>
+<td align="center">4</td>
+<td align="center">25</td>
+</tr>
+</tbody></table>
+<ul>
+<li>表中的数字代表原数据中此位置的数据在新数据中的位置，即原数据块的第16位放到新数据的第1位，第7位放到第2位，……依此类推，第25位放到第32位</li>
+<li>例如0x10A1 0001进行P盒置换后变为0x8000 0886</li>
+<li>0x10A1 0001表现为表的形式（第一位位于左上角）原来为</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">0</th>
+<th align="center">0</th>
+<th align="center">0</th>
+<th align="center">1</th>
+<th align="center">0</th>
+<th align="center">0</th>
+<th align="center">0</th>
+<th align="center">0</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">1</td>
+</tr>
+<tr>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">1</td>
+</tr>
+</tbody></table>
+<ul>
+<li>经P盒变换后为</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">1</th>
+<th align="center">0</th>
+<th align="center">0</th>
+<th align="center">0</th>
+<th align="center">0</th>
+<th align="center">0</th>
+<th align="center">0</th>
+<th align="center">0</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">0</td>
+</tr>
+</tbody></table>
+<ul>
+<li><p>即1000 0000 0000 0000 0000 1000 1000 0110B，十六进制为0x8000 0886</p>
+</li>
+<li><p>最后，P盒置换的结果与最初的64位分组左半部分L0异或，然后左、右半部分交换，接着开始另一轮</p>
+</li>
+</ul>
+<h4 id="IP逆置换"><a href="#IP逆置换" class="headerlink" title="IP逆置换"></a>IP逆置换</h4><p>DES最后一轮后，左、右两半部分并未进行交换，而是两部分合并形成一个分组做为末置换的输入。末置换规则如下表：</p>
+<table>
+<thead>
+<tr>
+<th align="center">40</th>
+<th align="center">8</th>
+<th align="center">48</th>
+<th align="center">16</th>
+<th align="center">56</th>
+<th align="center">24</th>
+<th align="center">64</th>
+<th align="center">32</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">39</td>
+<td align="center">7</td>
+<td align="center">47</td>
+<td align="center">15</td>
+<td align="center">55</td>
+<td align="center">23</td>
+<td align="center">63</td>
+<td align="center">31</td>
+</tr>
+<tr>
+<td align="center">38</td>
+<td align="center">6</td>
+<td align="center">46</td>
+<td align="center">14</td>
+<td align="center">54</td>
+<td align="center">22</td>
+<td align="center">62</td>
+<td align="center">30</td>
+</tr>
+<tr>
+<td align="center">37</td>
+<td align="center">5</td>
+<td align="center">45</td>
+<td align="center">13</td>
+<td align="center">53</td>
+<td align="center">21</td>
+<td align="center">61</td>
+<td align="center">29</td>
+</tr>
+<tr>
+<td align="center">36</td>
+<td align="center">4</td>
+<td align="center">44</td>
+<td align="center">12</td>
+<td align="center">52</td>
+<td align="center">20</td>
+<td align="center">60</td>
+<td align="center">28</td>
+</tr>
+<tr>
+<td align="center">35</td>
+<td align="center">3</td>
+<td align="center">43</td>
+<td align="center">11</td>
+<td align="center">51</td>
+<td align="center">19</td>
+<td align="center">59</td>
+<td align="center">27</td>
+</tr>
+<tr>
+<td align="center">34</td>
+<td align="center">2</td>
+<td align="center">42</td>
+<td align="center">10</td>
+<td align="center">50</td>
+<td align="center">18</td>
+<td align="center">58</td>
+<td align="center">26</td>
+</tr>
+<tr>
+<td align="center">33</td>
+<td align="center">1</td>
+<td align="center">41</td>
+<td align="center">9</td>
+<td align="center">49</td>
+<td align="center">17</td>
+<td align="center">57</td>
+<td align="center">25</td>
+</tr>
+</tbody></table>
+<p>置换方法同上，经过以上步骤，就可以得到密文了</p>
+<h3 id="解密"><a href="#解密" class="headerlink" title="解密"></a>解密</h3><p>解密就是加密的反过程，也是执行上述步骤，只不过在那16轮迭代中，需要调转左右子秘钥的位置</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://blog.z3phyr.site">Zephyr</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://blog.z3phyr.site/posts/DES.html">https://blog.z3phyr.site/posts/DES.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://blog.z3phyr.site" target="_blank">Zephyr's Repository</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/DES/">DES</a></div><div class="post-share"><div class="social-share" data-image="/img/avatar.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related  no-desc" href="/posts/AES.html" title="AES"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">AES</div></div></div></a><a class="pagination-related  no-desc" href="/posts/RSA.html" title="RSA"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">RSA</div></div></div></a></nav><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/loading.gif" data-lazy-src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Zephyr</div><div class="author-info-description">偷得浮生半日闲</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">120</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">46</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Zephyrccc"><i class="fab fa-github"></i><span>Github</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/Zephyrccc" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:ZephyrChen@outlook.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到Zephyrの自留地！请各位大大们评论时注意文明用语哦~</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#DES"><span class="toc-number">1.</span> <span class="toc-text">DES</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-number">1.1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DES%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%BB%93%E6%9E%84"><span class="toc-number">1.2.</span> <span class="toc-text">DES的基本结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86"><span class="toc-number">1.3.</span> <span class="toc-text">算法原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%A0%E5%AF%86"><span class="toc-number">1.3.1.</span> <span class="toc-text">加密</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#IP%E7%BD%AE%E6%8D%A2"><span class="toc-number">1.3.1.1.</span> <span class="toc-text">IP置换</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AF%86%E9%92%A5%E7%BD%AE%E6%8D%A2"><span class="toc-number">1.3.1.2.</span> <span class="toc-text">密钥置换</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#E%E6%89%A9%E5%B1%95%E7%BD%AE%E6%8D%A2"><span class="toc-number">1.3.1.3.</span> <span class="toc-text">E扩展置换</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#S%E7%9B%92%E6%9B%BF%E6%8D%A2"><span class="toc-number">1.3.1.4.</span> <span class="toc-text">S盒替换</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#P%E7%9B%92%E7%BD%AE%E6%8D%A2"><span class="toc-number">1.3.1.5.</span> <span class="toc-text">P盒置换</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#IP%E9%80%86%E7%BD%AE%E6%8D%A2"><span class="toc-number">1.3.1.6.</span> <span class="toc-text">IP逆置换</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%AF%86"><span class="toc-number">1.3.2.</span> <span class="toc-text">解密</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/Check_File.html" title="检测脚本">检测脚本</a><time datetime="2025-07-30T02:37:00.000Z" title="发表于 2025-07-30 10:37:00">2025-07-30</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/Oracle-Rectification.html" title="Oracle整改">Oracle整改</a><time datetime="2025-01-17T07:02:15.000Z" title="发表于 2025-01-17 15:02:15">2025-01-17</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/Linux-Rectification.html" title="Linux整改">Linux整改</a><time datetime="2025-01-06T07:32:15.000Z" title="发表于 2025-01-06 15:32:15">2025-01-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/Windows-Rectification.html" title="Windows整改">Windows整改</a><time datetime="2025-01-02T07:30:15.000Z" title="发表于 2025-01-02 15:30:15">2025-01-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/MySQL.html" title="MySQL">MySQL</a><time datetime="2024-11-05T02:00:00.000Z" title="发表于 2024-11-05 10:00:00">2024-11-05</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/img/default-img.jpg);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Zephyr</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5"></script><script src="/js/main.js?v=5.5.5"></script><script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/dist/medium-zoom.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@19.1.3/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23li9IpxWCrItZETRy',
+      clientSecret: '892f854e3a8fbe451ddac4d931bcd0f85f046c87',
+      repo: 'Zephyrccc.github.io',
+      owner: 'Zephyrccc',
+      admin: ['Zephyrccc'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || '6066b94a582bf29df88568e88488c891'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/fireworks.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索内容..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.5"></script></div></div></body></html>

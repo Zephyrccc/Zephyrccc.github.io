@@ -1,0 +1,2891 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Linux系统调用号 | Zephyr's Repository</title><meta name="author" content="Zephyr"><meta name="copyright" content="Zephyr"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="系统调用号简介在操作系统中，每个系统调用被赋予一个系统调用号。这样，通过独一无二的号就可以关联系统调用。当用户空间的进程执行一个系统调用的时候，这个系统调用号就用来指明到底是要执行哪个系统调用；进程不会提及系统调用的名称。 Linux32位   函数 调用号    exit 1   fork 2   read 3   write 4   open 5   close 6   waitpid 7">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux系统调用号">
+<meta property="og:url" content="https://blog.z3phyr.site/posts/Linux%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E5%8F%B7.html">
+<meta property="og:site_name" content="Zephyr&#39;s Repository">
+<meta property="og:description" content="系统调用号简介在操作系统中，每个系统调用被赋予一个系统调用号。这样，通过独一无二的号就可以关联系统调用。当用户空间的进程执行一个系统调用的时候，这个系统调用号就用来指明到底是要执行哪个系统调用；进程不会提及系统调用的名称。 Linux32位   函数 调用号    exit 1   fork 2   read 3   write 4   open 5   close 6   waitpid 7">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.z3phyr.site/img/avatar.png">
+<meta property="article:published_time" content="2022-07-05T04:11:03.000Z">
+<meta property="article:modified_time" content="2022-07-05T04:11:03.000Z">
+<meta property="article:author" content="Zephyr">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="Pwn">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.z3phyr.site/img/avatar.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Linux系统调用号",
+  "url": "https://blog.z3phyr.site/posts/Linux%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E5%8F%B7.html",
+  "image": "https://blog.z3phyr.site/img/avatar.png",
+  "datePublished": "2022-07-05T04:11:03.000Z",
+  "dateModified": "2022-07-05T04:11:03.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Zephyr",
+      "url": "https://blog.z3phyr.site"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://blog.z3phyr.site/posts/Linux%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E5%8F%B7.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//static.cloudflareinsights.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.2.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script defer="defer" data-pjax="data-pjax" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon="{&quot;token&quot;: &quot;bb47dbec9d394a07a3a5d0e80124d805&quot;}"></script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":false,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'medium_zoom',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-center"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Linux系统调用号',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.2"></head><body><div class="bg-animation" id="web_bg" style="background-image: url(/img/default-img.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/loading.gif" data-lazy-src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">120</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">46</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-file"></i><span> 笔记</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E7%AC%94%E8%AE%B0/Pwn/"><i class="fa-fw fas fa-square-binary"></i><span> Pwn</span></a></li><li><a class="site-page child" href="/categories/%E7%AC%94%E8%AE%B0/Web/"><i class="fa-fw fas fa-globe"></i><span> Web</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-code"></i><span> 技术</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E6%8A%80%E6%9C%AF/Pwn/"><i class="fa-fw fas fa-square-binary"></i><span> Pwn</span></a></li><li><a class="site-page child" href="/categories/%E6%8A%80%E6%9C%AF/Web/"><i class="fa-fw fas fa-globe"></i><span> Web</span></a></li><li><a class="site-page child" href="/categories/%E6%8A%80%E6%9C%AF/Crypto/"><i class="fa-fw fas fa-key"></i><span> Crypto</span></a></li><li><a class="site-page child" href="/categories/%E6%8A%80%E6%9C%AF/%E7%AD%89%E4%BF%9D/"><i class="fa-fw fas fa-shield-alt"></i><span> 等保</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 索引</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/talking/"><i class="fa-fw fas fa-pen-nib"></i><span> 说说</span></a></li><li><a class="site-page child" href="/favorites/"><i class="fa-fw fas fa-bookmark"></i><span> 收藏</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" href="/messageboard/"><i class="fa-fw fas fa-comment"></i><span> 留言板</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/default-img.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Zephyr's Repository</span></a><a class="nav-page-title" href="/"><span class="site-name">Linux系统调用号</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-file"></i><span> 笔记</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E7%AC%94%E8%AE%B0/Pwn/"><i class="fa-fw fas fa-square-binary"></i><span> Pwn</span></a></li><li><a class="site-page child" href="/categories/%E7%AC%94%E8%AE%B0/Web/"><i class="fa-fw fas fa-globe"></i><span> Web</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-code"></i><span> 技术</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E6%8A%80%E6%9C%AF/Pwn/"><i class="fa-fw fas fa-square-binary"></i><span> Pwn</span></a></li><li><a class="site-page child" href="/categories/%E6%8A%80%E6%9C%AF/Web/"><i class="fa-fw fas fa-globe"></i><span> Web</span></a></li><li><a class="site-page child" href="/categories/%E6%8A%80%E6%9C%AF/Crypto/"><i class="fa-fw fas fa-key"></i><span> Crypto</span></a></li><li><a class="site-page child" href="/categories/%E6%8A%80%E6%9C%AF/%E7%AD%89%E4%BF%9D/"><i class="fa-fw fas fa-shield-alt"></i><span> 等保</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 索引</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/talking/"><i class="fa-fw fas fa-pen-nib"></i><span> 说说</span></a></li><li><a class="site-page child" href="/favorites/"><i class="fa-fw fas fa-bookmark"></i><span> 收藏</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" href="/messageboard/"><i class="fa-fw fas fa-comment"></i><span> 留言板</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Linux系统调用号</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-07-05T04:11:03.000Z" title="发表于 2022-07-05 12:11:03">2022-07-05</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-07-05T04:11:03.000Z" title="更新于 2022-07-05 12:11:03">2022-07-05</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF/Pwn/">Pwn</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">1.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>8分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="系统调用号"><a href="#系统调用号" class="headerlink" title="系统调用号"></a>系统调用号</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>在操作系统中，每个系统调用被赋予一个系统调用号。这样，通过独一无二的号就可以关联系统调用。当用户空间的进程执行一个系统调用的时候，这个系统调用号就用来指明到底是要执行哪个系统调用；进程不会提及系统调用的名称。</p>
+<h2 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h2><h3 id="32位"><a href="#32位" class="headerlink" title="32位"></a>32位</h3><table>
+<thead>
+<tr>
+<th align="center">函数</th>
+<th align="center">调用号</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">exit</td>
+<td align="center">1</td>
+</tr>
+<tr>
+<td align="center">fork</td>
+<td align="center">2</td>
+</tr>
+<tr>
+<td align="center">read</td>
+<td align="center">3</td>
+</tr>
+<tr>
+<td align="center">write</td>
+<td align="center">4</td>
+</tr>
+<tr>
+<td align="center">open</td>
+<td align="center">5</td>
+</tr>
+<tr>
+<td align="center">close</td>
+<td align="center">6</td>
+</tr>
+<tr>
+<td align="center">waitpid</td>
+<td align="center">7</td>
+</tr>
+<tr>
+<td align="center">creat</td>
+<td align="center">8</td>
+</tr>
+<tr>
+<td align="center">link</td>
+<td align="center">9</td>
+</tr>
+<tr>
+<td align="center">unlink</td>
+<td align="center">10</td>
+</tr>
+<tr>
+<td align="center">execve</td>
+<td align="center">11</td>
+</tr>
+<tr>
+<td align="center">chdir</td>
+<td align="center">12</td>
+</tr>
+<tr>
+<td align="center">time</td>
+<td align="center">13</td>
+</tr>
+<tr>
+<td align="center">mknod</td>
+<td align="center">14</td>
+</tr>
+<tr>
+<td align="center">chmod</td>
+<td align="center">15</td>
+</tr>
+<tr>
+<td align="center">lchown</td>
+<td align="center">16</td>
+</tr>
+<tr>
+<td align="center">break</td>
+<td align="center">17</td>
+</tr>
+<tr>
+<td align="center">oldstat</td>
+<td align="center">18</td>
+</tr>
+<tr>
+<td align="center">lseek</td>
+<td align="center">19</td>
+</tr>
+<tr>
+<td align="center">getpid</td>
+<td align="center">20</td>
+</tr>
+<tr>
+<td align="center">mount</td>
+<td align="center">21</td>
+</tr>
+<tr>
+<td align="center">umount</td>
+<td align="center">22</td>
+</tr>
+<tr>
+<td align="center">setuid</td>
+<td align="center">23</td>
+</tr>
+<tr>
+<td align="center">getuid</td>
+<td align="center">24</td>
+</tr>
+<tr>
+<td align="center">stime</td>
+<td align="center">25</td>
+</tr>
+<tr>
+<td align="center">ptrace</td>
+<td align="center">26</td>
+</tr>
+<tr>
+<td align="center">alarm</td>
+<td align="center">27</td>
+</tr>
+<tr>
+<td align="center">oldfstat</td>
+<td align="center">28</td>
+</tr>
+<tr>
+<td align="center">pause</td>
+<td align="center">29</td>
+</tr>
+<tr>
+<td align="center">utime</td>
+<td align="center">30</td>
+</tr>
+<tr>
+<td align="center">stty</td>
+<td align="center">31</td>
+</tr>
+<tr>
+<td align="center">gtty</td>
+<td align="center">32</td>
+</tr>
+<tr>
+<td align="center">access</td>
+<td align="center">33</td>
+</tr>
+<tr>
+<td align="center">nice</td>
+<td align="center">34</td>
+</tr>
+<tr>
+<td align="center">ftime</td>
+<td align="center">35</td>
+</tr>
+<tr>
+<td align="center">sync</td>
+<td align="center">36</td>
+</tr>
+<tr>
+<td align="center">kill</td>
+<td align="center">37</td>
+</tr>
+<tr>
+<td align="center">rename</td>
+<td align="center">38</td>
+</tr>
+<tr>
+<td align="center">mkdir</td>
+<td align="center">39</td>
+</tr>
+<tr>
+<td align="center">rmdir</td>
+<td align="center">40</td>
+</tr>
+<tr>
+<td align="center">dup</td>
+<td align="center">41</td>
+</tr>
+<tr>
+<td align="center">pipe</td>
+<td align="center">42</td>
+</tr>
+<tr>
+<td align="center">times</td>
+<td align="center">43</td>
+</tr>
+<tr>
+<td align="center">prof</td>
+<td align="center">44</td>
+</tr>
+<tr>
+<td align="center">brk</td>
+<td align="center">45</td>
+</tr>
+<tr>
+<td align="center">setgid</td>
+<td align="center">46</td>
+</tr>
+<tr>
+<td align="center">getgid</td>
+<td align="center">47</td>
+</tr>
+<tr>
+<td align="center">signal</td>
+<td align="center">48</td>
+</tr>
+<tr>
+<td align="center">geteuid</td>
+<td align="center">49</td>
+</tr>
+<tr>
+<td align="center">getegid</td>
+<td align="center">50</td>
+</tr>
+<tr>
+<td align="center">acct</td>
+<td align="center">51</td>
+</tr>
+<tr>
+<td align="center">umount2</td>
+<td align="center">52</td>
+</tr>
+<tr>
+<td align="center">lock</td>
+<td align="center">53</td>
+</tr>
+<tr>
+<td align="center">ioctl</td>
+<td align="center">54</td>
+</tr>
+<tr>
+<td align="center">fcntl</td>
+<td align="center">55</td>
+</tr>
+<tr>
+<td align="center">mpx</td>
+<td align="center">56</td>
+</tr>
+<tr>
+<td align="center">setpgid</td>
+<td align="center">57</td>
+</tr>
+<tr>
+<td align="center">ulimit</td>
+<td align="center">58</td>
+</tr>
+<tr>
+<td align="center">oldolduname</td>
+<td align="center">59</td>
+</tr>
+<tr>
+<td align="center">umask</td>
+<td align="center">60</td>
+</tr>
+<tr>
+<td align="center">chroot</td>
+<td align="center">61</td>
+</tr>
+<tr>
+<td align="center">ustat</td>
+<td align="center">62</td>
+</tr>
+<tr>
+<td align="center">dup2</td>
+<td align="center">63</td>
+</tr>
+<tr>
+<td align="center">getppid</td>
+<td align="center">64</td>
+</tr>
+<tr>
+<td align="center">getpgrp</td>
+<td align="center">65</td>
+</tr>
+<tr>
+<td align="center">setsid</td>
+<td align="center">66</td>
+</tr>
+<tr>
+<td align="center">sigaction</td>
+<td align="center">67</td>
+</tr>
+<tr>
+<td align="center">sgetmask</td>
+<td align="center">68</td>
+</tr>
+<tr>
+<td align="center">ssetmask</td>
+<td align="center">69</td>
+</tr>
+<tr>
+<td align="center">setreuid</td>
+<td align="center">70</td>
+</tr>
+<tr>
+<td align="center">setregid</td>
+<td align="center">71</td>
+</tr>
+<tr>
+<td align="center">sigsuspend</td>
+<td align="center">72</td>
+</tr>
+<tr>
+<td align="center">sigpending</td>
+<td align="center">73</td>
+</tr>
+<tr>
+<td align="center">sethostname</td>
+<td align="center">74</td>
+</tr>
+<tr>
+<td align="center">setrlimit</td>
+<td align="center">75</td>
+</tr>
+<tr>
+<td align="center">getrlimit</td>
+<td align="center">76</td>
+</tr>
+<tr>
+<td align="center">getrusage</td>
+<td align="center">77</td>
+</tr>
+<tr>
+<td align="center">gettimeofday</td>
+<td align="center">78</td>
+</tr>
+<tr>
+<td align="center">settimeofday</td>
+<td align="center">79</td>
+</tr>
+<tr>
+<td align="center">getgroups</td>
+<td align="center">80</td>
+</tr>
+<tr>
+<td align="center">setgroups</td>
+<td align="center">81</td>
+</tr>
+<tr>
+<td align="center">select</td>
+<td align="center">82</td>
+</tr>
+<tr>
+<td align="center">symlink</td>
+<td align="center">83</td>
+</tr>
+<tr>
+<td align="center">oldlstat</td>
+<td align="center">84</td>
+</tr>
+<tr>
+<td align="center">readlink</td>
+<td align="center">85</td>
+</tr>
+<tr>
+<td align="center">uselib</td>
+<td align="center">86</td>
+</tr>
+<tr>
+<td align="center">swapon</td>
+<td align="center">87</td>
+</tr>
+<tr>
+<td align="center">reboot</td>
+<td align="center">88</td>
+</tr>
+<tr>
+<td align="center">readdir</td>
+<td align="center">89</td>
+</tr>
+<tr>
+<td align="center">mmap</td>
+<td align="center">90</td>
+</tr>
+<tr>
+<td align="center">munmap</td>
+<td align="center">91</td>
+</tr>
+<tr>
+<td align="center">truncate</td>
+<td align="center">92</td>
+</tr>
+<tr>
+<td align="center">ftruncate</td>
+<td align="center">93</td>
+</tr>
+<tr>
+<td align="center">fchmod</td>
+<td align="center">94</td>
+</tr>
+<tr>
+<td align="center">fchown</td>
+<td align="center">95</td>
+</tr>
+<tr>
+<td align="center">getpriority</td>
+<td align="center">96</td>
+</tr>
+<tr>
+<td align="center">setpriority</td>
+<td align="center">97</td>
+</tr>
+<tr>
+<td align="center">profil</td>
+<td align="center">98</td>
+</tr>
+<tr>
+<td align="center">statfs</td>
+<td align="center">99</td>
+</tr>
+<tr>
+<td align="center">fstatfs</td>
+<td align="center">100</td>
+</tr>
+<tr>
+<td align="center">ioperm</td>
+<td align="center">101</td>
+</tr>
+<tr>
+<td align="center">socketcall</td>
+<td align="center">102</td>
+</tr>
+<tr>
+<td align="center">syslog</td>
+<td align="center">103</td>
+</tr>
+<tr>
+<td align="center">setitimer</td>
+<td align="center">104</td>
+</tr>
+<tr>
+<td align="center">getitimer</td>
+<td align="center">105</td>
+</tr>
+<tr>
+<td align="center">stat</td>
+<td align="center">106</td>
+</tr>
+<tr>
+<td align="center">lstat</td>
+<td align="center">107</td>
+</tr>
+<tr>
+<td align="center">fstat</td>
+<td align="center">108</td>
+</tr>
+<tr>
+<td align="center">olduname</td>
+<td align="center">109</td>
+</tr>
+<tr>
+<td align="center">iopl</td>
+<td align="center">110</td>
+</tr>
+<tr>
+<td align="center">vhangup</td>
+<td align="center">111</td>
+</tr>
+<tr>
+<td align="center">idle</td>
+<td align="center">112</td>
+</tr>
+<tr>
+<td align="center">vm86old</td>
+<td align="center">113</td>
+</tr>
+<tr>
+<td align="center">wait4</td>
+<td align="center">114</td>
+</tr>
+<tr>
+<td align="center">swapoff</td>
+<td align="center">115</td>
+</tr>
+<tr>
+<td align="center">sysinfo</td>
+<td align="center">116</td>
+</tr>
+<tr>
+<td align="center">ipc</td>
+<td align="center">117</td>
+</tr>
+<tr>
+<td align="center">fsync</td>
+<td align="center">118</td>
+</tr>
+<tr>
+<td align="center">sigreturn</td>
+<td align="center">119</td>
+</tr>
+<tr>
+<td align="center">clone</td>
+<td align="center">120</td>
+</tr>
+<tr>
+<td align="center">setdomainname</td>
+<td align="center">121</td>
+</tr>
+<tr>
+<td align="center">uname</td>
+<td align="center">122</td>
+</tr>
+<tr>
+<td align="center">modify_ldt</td>
+<td align="center">123</td>
+</tr>
+<tr>
+<td align="center">adjtimex</td>
+<td align="center">124</td>
+</tr>
+<tr>
+<td align="center">mprotect</td>
+<td align="center">125</td>
+</tr>
+<tr>
+<td align="center">sigprocmask</td>
+<td align="center">126</td>
+</tr>
+<tr>
+<td align="center">create_module</td>
+<td align="center">127</td>
+</tr>
+<tr>
+<td align="center">init_module</td>
+<td align="center">128</td>
+</tr>
+<tr>
+<td align="center">delete_module</td>
+<td align="center">129</td>
+</tr>
+<tr>
+<td align="center">get_kernel_syms</td>
+<td align="center">130</td>
+</tr>
+<tr>
+<td align="center">quotactl</td>
+<td align="center">131</td>
+</tr>
+<tr>
+<td align="center">getpgid</td>
+<td align="center">132</td>
+</tr>
+<tr>
+<td align="center">fchdir</td>
+<td align="center">133</td>
+</tr>
+<tr>
+<td align="center">bdflush</td>
+<td align="center">134</td>
+</tr>
+<tr>
+<td align="center">sysfs</td>
+<td align="center">135</td>
+</tr>
+<tr>
+<td align="center">personality</td>
+<td align="center">136</td>
+</tr>
+<tr>
+<td align="center">afs_syscall</td>
+<td align="center">137</td>
+</tr>
+<tr>
+<td align="center">setfsuid</td>
+<td align="center">138</td>
+</tr>
+<tr>
+<td align="center">setfsgid</td>
+<td align="center">139</td>
+</tr>
+<tr>
+<td align="center">_llseek</td>
+<td align="center">140</td>
+</tr>
+<tr>
+<td align="center">getdents</td>
+<td align="center">141</td>
+</tr>
+<tr>
+<td align="center">_newselect</td>
+<td align="center">142</td>
+</tr>
+<tr>
+<td align="center">flock</td>
+<td align="center">143</td>
+</tr>
+<tr>
+<td align="center">msync</td>
+<td align="center">144</td>
+</tr>
+<tr>
+<td align="center">readv</td>
+<td align="center">145</td>
+</tr>
+<tr>
+<td align="center">writev</td>
+<td align="center">146</td>
+</tr>
+<tr>
+<td align="center">getsid</td>
+<td align="center">147</td>
+</tr>
+<tr>
+<td align="center">fdatasync</td>
+<td align="center">148</td>
+</tr>
+<tr>
+<td align="center">_sysctl</td>
+<td align="center">149</td>
+</tr>
+<tr>
+<td align="center">mlock</td>
+<td align="center">150</td>
+</tr>
+<tr>
+<td align="center">munlock</td>
+<td align="center">151</td>
+</tr>
+<tr>
+<td align="center">mlockall</td>
+<td align="center">152</td>
+</tr>
+<tr>
+<td align="center">munlockall</td>
+<td align="center">153</td>
+</tr>
+<tr>
+<td align="center">sched_setparam</td>
+<td align="center">154</td>
+</tr>
+<tr>
+<td align="center">sched_getparam</td>
+<td align="center">155</td>
+</tr>
+<tr>
+<td align="center">sched_setscheduler</td>
+<td align="center">156</td>
+</tr>
+<tr>
+<td align="center">sched_getscheduler</td>
+<td align="center">157</td>
+</tr>
+<tr>
+<td align="center">sched_yield</td>
+<td align="center">158</td>
+</tr>
+<tr>
+<td align="center">sched_get_priority_max</td>
+<td align="center">159</td>
+</tr>
+<tr>
+<td align="center">sched_get_priority_min</td>
+<td align="center">160</td>
+</tr>
+<tr>
+<td align="center">sched_rr_get_interval</td>
+<td align="center">161</td>
+</tr>
+<tr>
+<td align="center">nanosleep</td>
+<td align="center">162</td>
+</tr>
+<tr>
+<td align="center">mremap</td>
+<td align="center">163</td>
+</tr>
+<tr>
+<td align="center">setresuid</td>
+<td align="center">164</td>
+</tr>
+<tr>
+<td align="center">getresuid</td>
+<td align="center">165</td>
+</tr>
+<tr>
+<td align="center">vm86</td>
+<td align="center">166</td>
+</tr>
+<tr>
+<td align="center">query_module</td>
+<td align="center">167</td>
+</tr>
+<tr>
+<td align="center">poll</td>
+<td align="center">168</td>
+</tr>
+<tr>
+<td align="center">nfsservctl</td>
+<td align="center">169</td>
+</tr>
+<tr>
+<td align="center">setresgid</td>
+<td align="center">170</td>
+</tr>
+<tr>
+<td align="center">getresgid</td>
+<td align="center">171</td>
+</tr>
+<tr>
+<td align="center">prctl</td>
+<td align="center">172</td>
+</tr>
+<tr>
+<td align="center">rt_sigreturn</td>
+<td align="center">173</td>
+</tr>
+<tr>
+<td align="center">rt_sigaction</td>
+<td align="center">174</td>
+</tr>
+<tr>
+<td align="center">rt_sigprocmask</td>
+<td align="center">175</td>
+</tr>
+<tr>
+<td align="center">rt_sigpending</td>
+<td align="center">176</td>
+</tr>
+<tr>
+<td align="center">rt_sigtimedwait</td>
+<td align="center">177</td>
+</tr>
+<tr>
+<td align="center">rt_sigqueueinfo</td>
+<td align="center">178</td>
+</tr>
+<tr>
+<td align="center">rt_sigsuspend</td>
+<td align="center">179</td>
+</tr>
+<tr>
+<td align="center">pread64</td>
+<td align="center">180</td>
+</tr>
+<tr>
+<td align="center">pwrite64</td>
+<td align="center">181</td>
+</tr>
+<tr>
+<td align="center">chown</td>
+<td align="center">182</td>
+</tr>
+<tr>
+<td align="center">getcwd</td>
+<td align="center">183</td>
+</tr>
+<tr>
+<td align="center">capget</td>
+<td align="center">184</td>
+</tr>
+<tr>
+<td align="center">capset</td>
+<td align="center">185</td>
+</tr>
+<tr>
+<td align="center">sigaltstack</td>
+<td align="center">186</td>
+</tr>
+<tr>
+<td align="center">sendfile</td>
+<td align="center">187</td>
+</tr>
+<tr>
+<td align="center">getpmsg</td>
+<td align="center">188</td>
+</tr>
+<tr>
+<td align="center">putpmsg</td>
+<td align="center">189</td>
+</tr>
+<tr>
+<td align="center">vfork</td>
+<td align="center">190</td>
+</tr>
+<tr>
+<td align="center">ugetrlimit</td>
+<td align="center">191</td>
+</tr>
+<tr>
+<td align="center">mmap2</td>
+<td align="center">192</td>
+</tr>
+<tr>
+<td align="center">truncate64</td>
+<td align="center">193</td>
+</tr>
+<tr>
+<td align="center">ftruncate64</td>
+<td align="center">194</td>
+</tr>
+<tr>
+<td align="center">stat64</td>
+<td align="center">195</td>
+</tr>
+<tr>
+<td align="center">lstat64</td>
+<td align="center">196</td>
+</tr>
+<tr>
+<td align="center">fstat64</td>
+<td align="center">197</td>
+</tr>
+<tr>
+<td align="center">lchown32</td>
+<td align="center">198</td>
+</tr>
+<tr>
+<td align="center">getuid32</td>
+<td align="center">199</td>
+</tr>
+<tr>
+<td align="center">getgid32</td>
+<td align="center">200</td>
+</tr>
+<tr>
+<td align="center">geteuid32</td>
+<td align="center">201</td>
+</tr>
+<tr>
+<td align="center">getegid32</td>
+<td align="center">202</td>
+</tr>
+<tr>
+<td align="center">setreuid32</td>
+<td align="center">203</td>
+</tr>
+<tr>
+<td align="center">setregid32</td>
+<td align="center">204</td>
+</tr>
+<tr>
+<td align="center">getgroups32</td>
+<td align="center">205</td>
+</tr>
+<tr>
+<td align="center">setgroups32</td>
+<td align="center">206</td>
+</tr>
+<tr>
+<td align="center">fchown32</td>
+<td align="center">207</td>
+</tr>
+<tr>
+<td align="center">setresuid32</td>
+<td align="center">208</td>
+</tr>
+<tr>
+<td align="center">getresuid32</td>
+<td align="center">209</td>
+</tr>
+<tr>
+<td align="center">setresgid32</td>
+<td align="center">210</td>
+</tr>
+<tr>
+<td align="center">getresgid32</td>
+<td align="center">211</td>
+</tr>
+<tr>
+<td align="center">chown32</td>
+<td align="center">212</td>
+</tr>
+<tr>
+<td align="center">setuid32</td>
+<td align="center">213</td>
+</tr>
+<tr>
+<td align="center">setgid32</td>
+<td align="center">214</td>
+</tr>
+<tr>
+<td align="center">setfsuid32</td>
+<td align="center">215</td>
+</tr>
+<tr>
+<td align="center">setfsgid32</td>
+<td align="center">216</td>
+</tr>
+<tr>
+<td align="center">pivot_root</td>
+<td align="center">217</td>
+</tr>
+<tr>
+<td align="center">mincore</td>
+<td align="center">218</td>
+</tr>
+<tr>
+<td align="center">madvise</td>
+<td align="center">219</td>
+</tr>
+<tr>
+<td align="center">madvise1</td>
+<td align="center">219</td>
+</tr>
+<tr>
+<td align="center">getdents64</td>
+<td align="center">220</td>
+</tr>
+<tr>
+<td align="center">fcntl64</td>
+<td align="center">221</td>
+</tr>
+<tr>
+<td align="center">gettid</td>
+<td align="center">224</td>
+</tr>
+<tr>
+<td align="center">readahead</td>
+<td align="center">225</td>
+</tr>
+<tr>
+<td align="center">setxattr</td>
+<td align="center">226</td>
+</tr>
+<tr>
+<td align="center">lsetxattr</td>
+<td align="center">227</td>
+</tr>
+<tr>
+<td align="center">fsetxattr</td>
+<td align="center">228</td>
+</tr>
+<tr>
+<td align="center">getxattr</td>
+<td align="center">229</td>
+</tr>
+<tr>
+<td align="center">lgetxattr</td>
+<td align="center">230</td>
+</tr>
+<tr>
+<td align="center">fgetxattr</td>
+<td align="center">231</td>
+</tr>
+<tr>
+<td align="center">listxattr</td>
+<td align="center">232</td>
+</tr>
+<tr>
+<td align="center">llistxattr</td>
+<td align="center">233</td>
+</tr>
+<tr>
+<td align="center">flistxattr</td>
+<td align="center">234</td>
+</tr>
+<tr>
+<td align="center">removexattr</td>
+<td align="center">235</td>
+</tr>
+<tr>
+<td align="center">lremovexattr</td>
+<td align="center">236</td>
+</tr>
+<tr>
+<td align="center">fremovexattr</td>
+<td align="center">237</td>
+</tr>
+<tr>
+<td align="center">tkill</td>
+<td align="center">238</td>
+</tr>
+<tr>
+<td align="center">sendfile64</td>
+<td align="center">239</td>
+</tr>
+<tr>
+<td align="center">futex</td>
+<td align="center">240</td>
+</tr>
+<tr>
+<td align="center">sched_setaffinity</td>
+<td align="center">241</td>
+</tr>
+<tr>
+<td align="center">sched_getaffinity</td>
+<td align="center">242</td>
+</tr>
+<tr>
+<td align="center">set_thread_area</td>
+<td align="center">243</td>
+</tr>
+<tr>
+<td align="center">get_thread_area</td>
+<td align="center">244</td>
+</tr>
+<tr>
+<td align="center">io_setup</td>
+<td align="center">245</td>
+</tr>
+<tr>
+<td align="center">io_destroy</td>
+<td align="center">246</td>
+</tr>
+<tr>
+<td align="center">io_getevents</td>
+<td align="center">247</td>
+</tr>
+<tr>
+<td align="center">io_submit</td>
+<td align="center">248</td>
+</tr>
+<tr>
+<td align="center">io_cancel</td>
+<td align="center">249</td>
+</tr>
+<tr>
+<td align="center">fadvise64</td>
+<td align="center">250</td>
+</tr>
+<tr>
+<td align="center">exit_group</td>
+<td align="center">252</td>
+</tr>
+<tr>
+<td align="center">lookup_dcookie</td>
+<td align="center">253</td>
+</tr>
+<tr>
+<td align="center">epoll_create</td>
+<td align="center">254</td>
+</tr>
+<tr>
+<td align="center">epoll_ctl</td>
+<td align="center">255</td>
+</tr>
+<tr>
+<td align="center">epoll_wait</td>
+<td align="center">256</td>
+</tr>
+<tr>
+<td align="center">remap_file_pages</td>
+<td align="center">257</td>
+</tr>
+<tr>
+<td align="center">set_tid_address</td>
+<td align="center">258</td>
+</tr>
+<tr>
+<td align="center">timer_create</td>
+<td align="center">259</td>
+</tr>
+<tr>
+<td align="center">timer_settime</td>
+<td align="center">260</td>
+</tr>
+<tr>
+<td align="center">timer_gettime</td>
+<td align="center">261</td>
+</tr>
+<tr>
+<td align="center">timer_getoverrun</td>
+<td align="center">262</td>
+</tr>
+<tr>
+<td align="center">timer_delete</td>
+<td align="center">263</td>
+</tr>
+<tr>
+<td align="center">clock_settime</td>
+<td align="center">264</td>
+</tr>
+<tr>
+<td align="center">clock_gettime</td>
+<td align="center">265</td>
+</tr>
+<tr>
+<td align="center">clock_getres</td>
+<td align="center">266</td>
+</tr>
+<tr>
+<td align="center">clock_nanosleep</td>
+<td align="center">267</td>
+</tr>
+<tr>
+<td align="center">statfs64</td>
+<td align="center">268</td>
+</tr>
+<tr>
+<td align="center">fstatfs64</td>
+<td align="center">269</td>
+</tr>
+<tr>
+<td align="center">tgkill</td>
+<td align="center">270</td>
+</tr>
+<tr>
+<td align="center">utimes</td>
+<td align="center">271</td>
+</tr>
+<tr>
+<td align="center">fadvise64_64</td>
+<td align="center">272</td>
+</tr>
+<tr>
+<td align="center">vserver</td>
+<td align="center">273</td>
+</tr>
+<tr>
+<td align="center">mbind</td>
+<td align="center">274</td>
+</tr>
+<tr>
+<td align="center">get_mempolicy</td>
+<td align="center">275</td>
+</tr>
+<tr>
+<td align="center">set_mempolicy</td>
+<td align="center">276</td>
+</tr>
+<tr>
+<td align="center">mq_open</td>
+<td align="center">277</td>
+</tr>
+<tr>
+<td align="center">mq_unlink</td>
+<td align="center">278</td>
+</tr>
+<tr>
+<td align="center">mq_timedsend</td>
+<td align="center">279</td>
+</tr>
+<tr>
+<td align="center">mq_timedreceive</td>
+<td align="center">280</td>
+</tr>
+<tr>
+<td align="center">mq_notify</td>
+<td align="center">281</td>
+</tr>
+<tr>
+<td align="center">mq_getsetattr</td>
+<td align="center">282</td>
+</tr>
+<tr>
+<td align="center">kexec_load</td>
+<td align="center">283</td>
+</tr>
+<tr>
+<td align="center">waitid</td>
+<td align="center">284</td>
+</tr>
+<tr>
+<td align="center">sys_setaltroot</td>
+<td align="center">285</td>
+</tr>
+<tr>
+<td align="center">add_key</td>
+<td align="center">286</td>
+</tr>
+<tr>
+<td align="center">request_key</td>
+<td align="center">287</td>
+</tr>
+<tr>
+<td align="center">keyctl</td>
+<td align="center">288</td>
+</tr>
+<tr>
+<td align="center">ioprio_set</td>
+<td align="center">289</td>
+</tr>
+<tr>
+<td align="center">ioprio_get</td>
+<td align="center">290</td>
+</tr>
+<tr>
+<td align="center">inotify_init</td>
+<td align="center">291</td>
+</tr>
+<tr>
+<td align="center">inotify_add_watch</td>
+<td align="center">292</td>
+</tr>
+<tr>
+<td align="center">inotify_rm_watch</td>
+<td align="center">293</td>
+</tr>
+<tr>
+<td align="center">migrate_pages</td>
+<td align="center">294</td>
+</tr>
+<tr>
+<td align="center">openat</td>
+<td align="center">295</td>
+</tr>
+<tr>
+<td align="center">mkdirat</td>
+<td align="center">296</td>
+</tr>
+<tr>
+<td align="center">mknodat</td>
+<td align="center">297</td>
+</tr>
+<tr>
+<td align="center">fchownat</td>
+<td align="center">298</td>
+</tr>
+<tr>
+<td align="center">futimesat</td>
+<td align="center">299</td>
+</tr>
+<tr>
+<td align="center">fstatat64</td>
+<td align="center">300</td>
+</tr>
+<tr>
+<td align="center">unlinkat</td>
+<td align="center">301</td>
+</tr>
+<tr>
+<td align="center">renameat</td>
+<td align="center">302</td>
+</tr>
+<tr>
+<td align="center">linkat</td>
+<td align="center">303</td>
+</tr>
+<tr>
+<td align="center">symlinkat</td>
+<td align="center">304</td>
+</tr>
+<tr>
+<td align="center">readlinkat</td>
+<td align="center">305</td>
+</tr>
+<tr>
+<td align="center">fchmodat</td>
+<td align="center">306</td>
+</tr>
+<tr>
+<td align="center">faccessat</td>
+<td align="center">307</td>
+</tr>
+<tr>
+<td align="center">pselect6</td>
+<td align="center">308</td>
+</tr>
+<tr>
+<td align="center">ppoll</td>
+<td align="center">309</td>
+</tr>
+<tr>
+<td align="center">unshare</td>
+<td align="center">310</td>
+</tr>
+<tr>
+<td align="center">set_robust_list</td>
+<td align="center">311</td>
+</tr>
+<tr>
+<td align="center">get_robust_list</td>
+<td align="center">312</td>
+</tr>
+<tr>
+<td align="center">splice</td>
+<td align="center">313</td>
+</tr>
+<tr>
+<td align="center">sync_file_range</td>
+<td align="center">314</td>
+</tr>
+<tr>
+<td align="center">tee</td>
+<td align="center">315</td>
+</tr>
+<tr>
+<td align="center">vmsplice</td>
+<td align="center">316</td>
+</tr>
+<tr>
+<td align="center">move_pages</td>
+<td align="center">317</td>
+</tr>
+<tr>
+<td align="center">getcpu</td>
+<td align="center">318</td>
+</tr>
+<tr>
+<td align="center">epoll_pwait</td>
+<td align="center">319</td>
+</tr>
+<tr>
+<td align="center">utimensat</td>
+<td align="center">320</td>
+</tr>
+<tr>
+<td align="center">signalfd</td>
+<td align="center">321</td>
+</tr>
+<tr>
+<td align="center">timerfd_create</td>
+<td align="center">322</td>
+</tr>
+<tr>
+<td align="center">eventfd</td>
+<td align="center">323</td>
+</tr>
+<tr>
+<td align="center">fallocate</td>
+<td align="center">324</td>
+</tr>
+<tr>
+<td align="center">timerfd_settime</td>
+<td align="center">325</td>
+</tr>
+<tr>
+<td align="center">timerfd_gettime</td>
+<td align="center">326</td>
+</tr>
+<tr>
+<td align="center">signalfd4</td>
+<td align="center">327</td>
+</tr>
+<tr>
+<td align="center">eventfd2</td>
+<td align="center">328</td>
+</tr>
+<tr>
+<td align="center">epoll_create1</td>
+<td align="center">329</td>
+</tr>
+<tr>
+<td align="center">dup3</td>
+<td align="center">330</td>
+</tr>
+<tr>
+<td align="center">pipe2</td>
+<td align="center">331</td>
+</tr>
+<tr>
+<td align="center">inotify_init1</td>
+<td align="center">332</td>
+</tr>
+<tr>
+<td align="center">preadv</td>
+<td align="center">333</td>
+</tr>
+<tr>
+<td align="center">pwritev</td>
+<td align="center">334</td>
+</tr>
+<tr>
+<td align="center">rt_tgsigqueueinfo</td>
+<td align="center">335</td>
+</tr>
+<tr>
+<td align="center">perf_event_open</td>
+<td align="center">336</td>
+</tr>
+<tr>
+<td align="center">recvmmsg</td>
+<td align="center">337</td>
+</tr>
+<tr>
+<td align="center">fanotify_init</td>
+<td align="center">338</td>
+</tr>
+<tr>
+<td align="center">fanotify_mark</td>
+<td align="center">339</td>
+</tr>
+<tr>
+<td align="center">prlimit64</td>
+<td align="center">340</td>
+</tr>
+<tr>
+<td align="center">name_to_handle_at</td>
+<td align="center">341</td>
+</tr>
+<tr>
+<td align="center">open_by_handle_at</td>
+<td align="center">342</td>
+</tr>
+<tr>
+<td align="center">clock_adjtime</td>
+<td align="center">343</td>
+</tr>
+<tr>
+<td align="center">syncfs</td>
+<td align="center">344</td>
+</tr>
+<tr>
+<td align="center">sendmmsg</td>
+<td align="center">345</td>
+</tr>
+<tr>
+<td align="center">set_ns</td>
+<td align="center">346</td>
+</tr>
+<tr>
+<td align="center">process_vm_readv</td>
+<td align="center">347</td>
+</tr>
+<tr>
+<td align="center">process_vm_writev</td>
+<td align="center">348</td>
+</tr>
+</tbody></table>
+<h3 id="64位"><a href="#64位" class="headerlink" title="64位"></a>64位</h3><table>
+<thead>
+<tr>
+<th align="center">函数</th>
+<th align="center">调用号</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">read</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">write</td>
+<td align="center">1</td>
+</tr>
+<tr>
+<td align="center">open</td>
+<td align="center">2</td>
+</tr>
+<tr>
+<td align="center">close</td>
+<td align="center">3</td>
+</tr>
+<tr>
+<td align="center">stat</td>
+<td align="center">4</td>
+</tr>
+<tr>
+<td align="center">fstat</td>
+<td align="center">5</td>
+</tr>
+<tr>
+<td align="center">lstat</td>
+<td align="center">6</td>
+</tr>
+<tr>
+<td align="center">poll</td>
+<td align="center">7</td>
+</tr>
+<tr>
+<td align="center">lseek</td>
+<td align="center">8</td>
+</tr>
+<tr>
+<td align="center">mmap</td>
+<td align="center">9</td>
+</tr>
+<tr>
+<td align="center">mprotect</td>
+<td align="center">10</td>
+</tr>
+<tr>
+<td align="center">munmap</td>
+<td align="center">11</td>
+</tr>
+<tr>
+<td align="center">brk</td>
+<td align="center">12</td>
+</tr>
+<tr>
+<td align="center">rt_sigaction</td>
+<td align="center">13</td>
+</tr>
+<tr>
+<td align="center">rt_sigprocmask</td>
+<td align="center">14</td>
+</tr>
+<tr>
+<td align="center">rt_sigreturn</td>
+<td align="center">15</td>
+</tr>
+<tr>
+<td align="center">ioctl</td>
+<td align="center">16</td>
+</tr>
+<tr>
+<td align="center">pread64</td>
+<td align="center">17</td>
+</tr>
+<tr>
+<td align="center">pwrite64</td>
+<td align="center">18</td>
+</tr>
+<tr>
+<td align="center">readv</td>
+<td align="center">19</td>
+</tr>
+<tr>
+<td align="center">writev</td>
+<td align="center">20</td>
+</tr>
+<tr>
+<td align="center">access</td>
+<td align="center">21</td>
+</tr>
+<tr>
+<td align="center">pipe</td>
+<td align="center">22</td>
+</tr>
+<tr>
+<td align="center">select</td>
+<td align="center">23</td>
+</tr>
+<tr>
+<td align="center">sched_yield</td>
+<td align="center">24</td>
+</tr>
+<tr>
+<td align="center">mremap</td>
+<td align="center">25</td>
+</tr>
+<tr>
+<td align="center">msync</td>
+<td align="center">26</td>
+</tr>
+<tr>
+<td align="center">mincore</td>
+<td align="center">27</td>
+</tr>
+<tr>
+<td align="center">madvise</td>
+<td align="center">28</td>
+</tr>
+<tr>
+<td align="center">shmget</td>
+<td align="center">29</td>
+</tr>
+<tr>
+<td align="center">shmat</td>
+<td align="center">30</td>
+</tr>
+<tr>
+<td align="center">shmctl</td>
+<td align="center">31</td>
+</tr>
+<tr>
+<td align="center">dup</td>
+<td align="center">32</td>
+</tr>
+<tr>
+<td align="center">dup2</td>
+<td align="center">33</td>
+</tr>
+<tr>
+<td align="center">pause</td>
+<td align="center">34</td>
+</tr>
+<tr>
+<td align="center">nanosleep</td>
+<td align="center">35</td>
+</tr>
+<tr>
+<td align="center">getitimer</td>
+<td align="center">36</td>
+</tr>
+<tr>
+<td align="center">alarm</td>
+<td align="center">37</td>
+</tr>
+<tr>
+<td align="center">setitimer</td>
+<td align="center">38</td>
+</tr>
+<tr>
+<td align="center">getpid</td>
+<td align="center">39</td>
+</tr>
+<tr>
+<td align="center">sendfile</td>
+<td align="center">40</td>
+</tr>
+<tr>
+<td align="center">socket</td>
+<td align="center">41</td>
+</tr>
+<tr>
+<td align="center">connect</td>
+<td align="center">42</td>
+</tr>
+<tr>
+<td align="center">accept</td>
+<td align="center">43</td>
+</tr>
+<tr>
+<td align="center">sendto</td>
+<td align="center">44</td>
+</tr>
+<tr>
+<td align="center">recvfrom</td>
+<td align="center">45</td>
+</tr>
+<tr>
+<td align="center">sendmsg</td>
+<td align="center">46</td>
+</tr>
+<tr>
+<td align="center">recvmsg</td>
+<td align="center">47</td>
+</tr>
+<tr>
+<td align="center">shutdown</td>
+<td align="center">48</td>
+</tr>
+<tr>
+<td align="center">bind</td>
+<td align="center">49</td>
+</tr>
+<tr>
+<td align="center">listen</td>
+<td align="center">50</td>
+</tr>
+<tr>
+<td align="center">getsockname</td>
+<td align="center">51</td>
+</tr>
+<tr>
+<td align="center">getpeername</td>
+<td align="center">52</td>
+</tr>
+<tr>
+<td align="center">socketpair</td>
+<td align="center">53</td>
+</tr>
+<tr>
+<td align="center">setsockopt</td>
+<td align="center">54</td>
+</tr>
+<tr>
+<td align="center">getsockopt</td>
+<td align="center">55</td>
+</tr>
+<tr>
+<td align="center">clone</td>
+<td align="center">56</td>
+</tr>
+<tr>
+<td align="center">fork</td>
+<td align="center">57</td>
+</tr>
+<tr>
+<td align="center">vfork</td>
+<td align="center">58</td>
+</tr>
+<tr>
+<td align="center">execve</td>
+<td align="center">59</td>
+</tr>
+<tr>
+<td align="center">exit</td>
+<td align="center">60</td>
+</tr>
+<tr>
+<td align="center">wait4</td>
+<td align="center">61</td>
+</tr>
+<tr>
+<td align="center">kill</td>
+<td align="center">62</td>
+</tr>
+<tr>
+<td align="center">uname</td>
+<td align="center">63</td>
+</tr>
+<tr>
+<td align="center">semget</td>
+<td align="center">64</td>
+</tr>
+<tr>
+<td align="center">semop</td>
+<td align="center">65</td>
+</tr>
+<tr>
+<td align="center">semctl</td>
+<td align="center">66</td>
+</tr>
+<tr>
+<td align="center">shmdt</td>
+<td align="center">67</td>
+</tr>
+<tr>
+<td align="center">msgget</td>
+<td align="center">68</td>
+</tr>
+<tr>
+<td align="center">msgsnd</td>
+<td align="center">69</td>
+</tr>
+<tr>
+<td align="center">msgrcv</td>
+<td align="center">70</td>
+</tr>
+<tr>
+<td align="center">msgctl</td>
+<td align="center">71</td>
+</tr>
+<tr>
+<td align="center">fcntl</td>
+<td align="center">72</td>
+</tr>
+<tr>
+<td align="center">flock</td>
+<td align="center">73</td>
+</tr>
+<tr>
+<td align="center">fsync</td>
+<td align="center">74</td>
+</tr>
+<tr>
+<td align="center">fdatasync</td>
+<td align="center">75</td>
+</tr>
+<tr>
+<td align="center">truncate</td>
+<td align="center">76</td>
+</tr>
+<tr>
+<td align="center">ftruncate</td>
+<td align="center">77</td>
+</tr>
+<tr>
+<td align="center">getdents</td>
+<td align="center">78</td>
+</tr>
+<tr>
+<td align="center">getcwd</td>
+<td align="center">79</td>
+</tr>
+<tr>
+<td align="center">chdir</td>
+<td align="center">80</td>
+</tr>
+<tr>
+<td align="center">fchdir</td>
+<td align="center">81</td>
+</tr>
+<tr>
+<td align="center">rename</td>
+<td align="center">82</td>
+</tr>
+<tr>
+<td align="center">mkdir</td>
+<td align="center">83</td>
+</tr>
+<tr>
+<td align="center">rmdir</td>
+<td align="center">84</td>
+</tr>
+<tr>
+<td align="center">creat</td>
+<td align="center">85</td>
+</tr>
+<tr>
+<td align="center">link</td>
+<td align="center">86</td>
+</tr>
+<tr>
+<td align="center">unlink</td>
+<td align="center">87</td>
+</tr>
+<tr>
+<td align="center">symlink</td>
+<td align="center">88</td>
+</tr>
+<tr>
+<td align="center">readlink</td>
+<td align="center">89</td>
+</tr>
+<tr>
+<td align="center">chmod</td>
+<td align="center">90</td>
+</tr>
+<tr>
+<td align="center">fchmod</td>
+<td align="center">91</td>
+</tr>
+<tr>
+<td align="center">chown</td>
+<td align="center">92</td>
+</tr>
+<tr>
+<td align="center">fchown</td>
+<td align="center">93</td>
+</tr>
+<tr>
+<td align="center">lchown</td>
+<td align="center">94</td>
+</tr>
+<tr>
+<td align="center">umask</td>
+<td align="center">95</td>
+</tr>
+<tr>
+<td align="center">gettimeofday</td>
+<td align="center">96</td>
+</tr>
+<tr>
+<td align="center">getrlimit</td>
+<td align="center">97</td>
+</tr>
+<tr>
+<td align="center">getrusage</td>
+<td align="center">98</td>
+</tr>
+<tr>
+<td align="center">sysinfo</td>
+<td align="center">99</td>
+</tr>
+<tr>
+<td align="center">times</td>
+<td align="center">100</td>
+</tr>
+<tr>
+<td align="center">ptrace</td>
+<td align="center">101</td>
+</tr>
+<tr>
+<td align="center">getuid</td>
+<td align="center">102</td>
+</tr>
+<tr>
+<td align="center">syslog</td>
+<td align="center">103</td>
+</tr>
+<tr>
+<td align="center">getgid</td>
+<td align="center">104</td>
+</tr>
+<tr>
+<td align="center">setuid</td>
+<td align="center">105</td>
+</tr>
+<tr>
+<td align="center">setgid</td>
+<td align="center">106</td>
+</tr>
+<tr>
+<td align="center">geteuid</td>
+<td align="center">107</td>
+</tr>
+<tr>
+<td align="center">getegid</td>
+<td align="center">108</td>
+</tr>
+<tr>
+<td align="center">setpgid</td>
+<td align="center">109</td>
+</tr>
+<tr>
+<td align="center">getppid</td>
+<td align="center">110</td>
+</tr>
+<tr>
+<td align="center">getpgrp</td>
+<td align="center">111</td>
+</tr>
+<tr>
+<td align="center">setsid</td>
+<td align="center">112</td>
+</tr>
+<tr>
+<td align="center">setreuid</td>
+<td align="center">113</td>
+</tr>
+<tr>
+<td align="center">setregid</td>
+<td align="center">114</td>
+</tr>
+<tr>
+<td align="center">getgroups</td>
+<td align="center">115</td>
+</tr>
+<tr>
+<td align="center">setgroups</td>
+<td align="center">116</td>
+</tr>
+<tr>
+<td align="center">setresuid</td>
+<td align="center">117</td>
+</tr>
+<tr>
+<td align="center">getresuid</td>
+<td align="center">118</td>
+</tr>
+<tr>
+<td align="center">setresgid</td>
+<td align="center">119</td>
+</tr>
+<tr>
+<td align="center">getresgid</td>
+<td align="center">120</td>
+</tr>
+<tr>
+<td align="center">getpgid</td>
+<td align="center">121</td>
+</tr>
+<tr>
+<td align="center">setfsuid</td>
+<td align="center">122</td>
+</tr>
+<tr>
+<td align="center">setfsgid</td>
+<td align="center">123</td>
+</tr>
+<tr>
+<td align="center">getsid</td>
+<td align="center">124</td>
+</tr>
+<tr>
+<td align="center">capget</td>
+<td align="center">125</td>
+</tr>
+<tr>
+<td align="center">capset</td>
+<td align="center">126</td>
+</tr>
+<tr>
+<td align="center">rt_sigpending</td>
+<td align="center">127</td>
+</tr>
+<tr>
+<td align="center">rt_sigtimedwait</td>
+<td align="center">128</td>
+</tr>
+<tr>
+<td align="center">rt_sigqueueinfo</td>
+<td align="center">129</td>
+</tr>
+<tr>
+<td align="center">rt_sigsuspend</td>
+<td align="center">130</td>
+</tr>
+<tr>
+<td align="center">sigaltstack</td>
+<td align="center">131</td>
+</tr>
+<tr>
+<td align="center">utime</td>
+<td align="center">132</td>
+</tr>
+<tr>
+<td align="center">mknod</td>
+<td align="center">133</td>
+</tr>
+<tr>
+<td align="center">d</td>
+<td align="center">for</td>
+</tr>
+<tr>
+<td align="center">uselib</td>
+<td align="center">134</td>
+</tr>
+<tr>
+<td align="center">personality</td>
+<td align="center">135</td>
+</tr>
+<tr>
+<td align="center">ustat</td>
+<td align="center">136</td>
+</tr>
+<tr>
+<td align="center">statfs</td>
+<td align="center">137</td>
+</tr>
+<tr>
+<td align="center">fstatfs</td>
+<td align="center">138</td>
+</tr>
+<tr>
+<td align="center">sysfs</td>
+<td align="center">139</td>
+</tr>
+<tr>
+<td align="center">getpriority</td>
+<td align="center">140</td>
+</tr>
+<tr>
+<td align="center">setpriority</td>
+<td align="center">141</td>
+</tr>
+<tr>
+<td align="center">sched_setparam</td>
+<td align="center">142</td>
+</tr>
+<tr>
+<td align="center">sched_getparam</td>
+<td align="center">143</td>
+</tr>
+<tr>
+<td align="center">sched_setscheduler</td>
+<td align="center">144</td>
+</tr>
+<tr>
+<td align="center">sched_getscheduler</td>
+<td align="center">145</td>
+</tr>
+<tr>
+<td align="center">sched_get_priority_max</td>
+<td align="center">146</td>
+</tr>
+<tr>
+<td align="center">sched_get_priority_min</td>
+<td align="center">147</td>
+</tr>
+<tr>
+<td align="center">sched_rr_get_interval</td>
+<td align="center">148</td>
+</tr>
+<tr>
+<td align="center">mlock</td>
+<td align="center">149</td>
+</tr>
+<tr>
+<td align="center">munlock</td>
+<td align="center">150</td>
+</tr>
+<tr>
+<td align="center">mlockall</td>
+<td align="center">151</td>
+</tr>
+<tr>
+<td align="center">munlockall</td>
+<td align="center">152</td>
+</tr>
+<tr>
+<td align="center">vhangup</td>
+<td align="center">153</td>
+</tr>
+<tr>
+<td align="center">modify_ldt</td>
+<td align="center">154</td>
+</tr>
+<tr>
+<td align="center">pivot_root</td>
+<td align="center">155</td>
+</tr>
+<tr>
+<td align="center">_sysctl</td>
+<td align="center">156</td>
+</tr>
+<tr>
+<td align="center">prctl</td>
+<td align="center">157</td>
+</tr>
+<tr>
+<td align="center">arch_prctl</td>
+<td align="center">158</td>
+</tr>
+<tr>
+<td align="center">adjtimex</td>
+<td align="center">159</td>
+</tr>
+<tr>
+<td align="center">setrlimit</td>
+<td align="center">160</td>
+</tr>
+<tr>
+<td align="center">chroot</td>
+<td align="center">161</td>
+</tr>
+<tr>
+<td align="center">sync</td>
+<td align="center">162</td>
+</tr>
+<tr>
+<td align="center">acct</td>
+<td align="center">163</td>
+</tr>
+<tr>
+<td align="center">settimeofday</td>
+<td align="center">164</td>
+</tr>
+<tr>
+<td align="center">mount</td>
+<td align="center">165</td>
+</tr>
+<tr>
+<td align="center">umount2</td>
+<td align="center">166</td>
+</tr>
+<tr>
+<td align="center">swapon</td>
+<td align="center">167</td>
+</tr>
+<tr>
+<td align="center">swapoff</td>
+<td align="center">168</td>
+</tr>
+<tr>
+<td align="center">reboot</td>
+<td align="center">169</td>
+</tr>
+<tr>
+<td align="center">sethostname</td>
+<td align="center">170</td>
+</tr>
+<tr>
+<td align="center">setdomainname</td>
+<td align="center">171</td>
+</tr>
+<tr>
+<td align="center">iopl</td>
+<td align="center">172</td>
+</tr>
+<tr>
+<td align="center">ioperm</td>
+<td align="center">173</td>
+</tr>
+<tr>
+<td align="center">create_module</td>
+<td align="center">174</td>
+</tr>
+<tr>
+<td align="center">init_module</td>
+<td align="center">175</td>
+</tr>
+<tr>
+<td align="center">delete_module</td>
+<td align="center">176</td>
+</tr>
+<tr>
+<td align="center">get_kernel_syms</td>
+<td align="center">177</td>
+</tr>
+<tr>
+<td align="center">query_module</td>
+<td align="center">178</td>
+</tr>
+<tr>
+<td align="center">quotactl</td>
+<td align="center">179</td>
+</tr>
+<tr>
+<td align="center">nfsservctl</td>
+<td align="center">180</td>
+</tr>
+<tr>
+<td align="center">getpmsg</td>
+<td align="center">181</td>
+</tr>
+<tr>
+<td align="center">putpmsg</td>
+<td align="center">182</td>
+</tr>
+<tr>
+<td align="center">afs_syscall</td>
+<td align="center">183</td>
+</tr>
+<tr>
+<td align="center">tuxcall</td>
+<td align="center">184</td>
+</tr>
+<tr>
+<td align="center">security</td>
+<td align="center">185</td>
+</tr>
+<tr>
+<td align="center">gettid</td>
+<td align="center">186</td>
+</tr>
+<tr>
+<td align="center">readahead</td>
+<td align="center">187</td>
+</tr>
+<tr>
+<td align="center">setxattr</td>
+<td align="center">188</td>
+</tr>
+<tr>
+<td align="center">lsetxattr</td>
+<td align="center">189</td>
+</tr>
+<tr>
+<td align="center">fsetxattr</td>
+<td align="center">190</td>
+</tr>
+<tr>
+<td align="center">getxattr</td>
+<td align="center">191</td>
+</tr>
+<tr>
+<td align="center">lgetxattr</td>
+<td align="center">192</td>
+</tr>
+<tr>
+<td align="center">fgetxattr</td>
+<td align="center">193</td>
+</tr>
+<tr>
+<td align="center">listxattr</td>
+<td align="center">194</td>
+</tr>
+<tr>
+<td align="center">llistxattr</td>
+<td align="center">195</td>
+</tr>
+<tr>
+<td align="center">flistxattr</td>
+<td align="center">196</td>
+</tr>
+<tr>
+<td align="center">removexattr</td>
+<td align="center">197</td>
+</tr>
+<tr>
+<td align="center">lremovexattr</td>
+<td align="center">198</td>
+</tr>
+<tr>
+<td align="center">fremovexattr</td>
+<td align="center">199</td>
+</tr>
+<tr>
+<td align="center">tkill</td>
+<td align="center">200</td>
+</tr>
+<tr>
+<td align="center">time</td>
+<td align="center">201</td>
+</tr>
+<tr>
+<td align="center">futex</td>
+<td align="center">202</td>
+</tr>
+<tr>
+<td align="center">sched_setaffinity</td>
+<td align="center">203</td>
+</tr>
+<tr>
+<td align="center">sched_getaffinity</td>
+<td align="center">204</td>
+</tr>
+<tr>
+<td align="center">set_thread_area</td>
+<td align="center">205</td>
+</tr>
+<tr>
+<td align="center">io_setup</td>
+<td align="center">206</td>
+</tr>
+<tr>
+<td align="center">io_destroy</td>
+<td align="center">207</td>
+</tr>
+<tr>
+<td align="center">io_getevents</td>
+<td align="center">208</td>
+</tr>
+<tr>
+<td align="center">io_submit</td>
+<td align="center">209</td>
+</tr>
+<tr>
+<td align="center">io_cancel</td>
+<td align="center">210</td>
+</tr>
+<tr>
+<td align="center">get_thread_area</td>
+<td align="center">211</td>
+</tr>
+<tr>
+<td align="center">lookup_dcookie</td>
+<td align="center">212</td>
+</tr>
+<tr>
+<td align="center">epoll_create</td>
+<td align="center">213</td>
+</tr>
+<tr>
+<td align="center">epoll_ctl_old</td>
+<td align="center">214</td>
+</tr>
+<tr>
+<td align="center">epoll_wait_old</td>
+<td align="center">215</td>
+</tr>
+<tr>
+<td align="center">remap_file_pages</td>
+<td align="center">216</td>
+</tr>
+<tr>
+<td align="center">getdents64</td>
+<td align="center">217</td>
+</tr>
+<tr>
+<td align="center">set_tid_address</td>
+<td align="center">218</td>
+</tr>
+<tr>
+<td align="center">restart_syscall</td>
+<td align="center">219</td>
+</tr>
+<tr>
+<td align="center">semtimedop</td>
+<td align="center">220</td>
+</tr>
+<tr>
+<td align="center">fadvise64</td>
+<td align="center">221</td>
+</tr>
+<tr>
+<td align="center">timer_create</td>
+<td align="center">222</td>
+</tr>
+<tr>
+<td align="center">timer_settime</td>
+<td align="center">223</td>
+</tr>
+<tr>
+<td align="center">timer_gettime</td>
+<td align="center">224</td>
+</tr>
+<tr>
+<td align="center">timer_getoverrun</td>
+<td align="center">225</td>
+</tr>
+<tr>
+<td align="center">timer_delete</td>
+<td align="center">226</td>
+</tr>
+<tr>
+<td align="center">clock_settime</td>
+<td align="center">227</td>
+</tr>
+<tr>
+<td align="center">clock_gettime</td>
+<td align="center">228</td>
+</tr>
+<tr>
+<td align="center">clock_getres</td>
+<td align="center">229</td>
+</tr>
+<tr>
+<td align="center">clock_nanosleep</td>
+<td align="center">230</td>
+</tr>
+<tr>
+<td align="center">exit_group</td>
+<td align="center">231</td>
+</tr>
+<tr>
+<td align="center">epoll_wait</td>
+<td align="center">232</td>
+</tr>
+<tr>
+<td align="center">epoll_ctl</td>
+<td align="center">233</td>
+</tr>
+<tr>
+<td align="center">tgkill</td>
+<td align="center">234</td>
+</tr>
+<tr>
+<td align="center">utimes</td>
+<td align="center">235</td>
+</tr>
+<tr>
+<td align="center">vserver</td>
+<td align="center">236</td>
+</tr>
+<tr>
+<td align="center">mbind</td>
+<td align="center">237</td>
+</tr>
+<tr>
+<td align="center">set_mempolicy</td>
+<td align="center">238</td>
+</tr>
+<tr>
+<td align="center">get_mempolicy</td>
+<td align="center">239</td>
+</tr>
+<tr>
+<td align="center">mq_open</td>
+<td align="center">240</td>
+</tr>
+<tr>
+<td align="center">mq_unlink</td>
+<td align="center">241</td>
+</tr>
+<tr>
+<td align="center">mq_timedsend</td>
+<td align="center">242</td>
+</tr>
+<tr>
+<td align="center">mq_timedreceive</td>
+<td align="center">243</td>
+</tr>
+<tr>
+<td align="center">mq_notify</td>
+<td align="center">244</td>
+</tr>
+<tr>
+<td align="center">mq_getsetattr</td>
+<td align="center">245</td>
+</tr>
+<tr>
+<td align="center">kexec_load</td>
+<td align="center">246</td>
+</tr>
+<tr>
+<td align="center">waitid</td>
+<td align="center">247</td>
+</tr>
+<tr>
+<td align="center">add_key</td>
+<td align="center">248</td>
+</tr>
+<tr>
+<td align="center">request_key</td>
+<td align="center">249</td>
+</tr>
+<tr>
+<td align="center">keyctl</td>
+<td align="center">250</td>
+</tr>
+<tr>
+<td align="center">ioprio_set</td>
+<td align="center">251</td>
+</tr>
+<tr>
+<td align="center">ioprio_get</td>
+<td align="center">252</td>
+</tr>
+<tr>
+<td align="center">inotify_init</td>
+<td align="center">253</td>
+</tr>
+<tr>
+<td align="center">inotify_add_watch</td>
+<td align="center">254</td>
+</tr>
+<tr>
+<td align="center">inotify_rm_watch</td>
+<td align="center">255</td>
+</tr>
+<tr>
+<td align="center">migrate_pages</td>
+<td align="center">256</td>
+</tr>
+<tr>
+<td align="center">openat</td>
+<td align="center">257</td>
+</tr>
+<tr>
+<td align="center">mkdirat</td>
+<td align="center">258</td>
+</tr>
+<tr>
+<td align="center">mknodat</td>
+<td align="center">259</td>
+</tr>
+<tr>
+<td align="center">fchownat</td>
+<td align="center">260</td>
+</tr>
+<tr>
+<td align="center">futimesat</td>
+<td align="center">261</td>
+</tr>
+<tr>
+<td align="center">newfstatat</td>
+<td align="center">262</td>
+</tr>
+<tr>
+<td align="center">unlinkat</td>
+<td align="center">263</td>
+</tr>
+<tr>
+<td align="center">renameat</td>
+<td align="center">264</td>
+</tr>
+<tr>
+<td align="center">linkat</td>
+<td align="center">265</td>
+</tr>
+<tr>
+<td align="center">symlinkat</td>
+<td align="center">266</td>
+</tr>
+<tr>
+<td align="center">readlinkat</td>
+<td align="center">267</td>
+</tr>
+<tr>
+<td align="center">fchmodat</td>
+<td align="center">268</td>
+</tr>
+<tr>
+<td align="center">faccessat</td>
+<td align="center">269</td>
+</tr>
+<tr>
+<td align="center">pselect6</td>
+<td align="center">270</td>
+</tr>
+<tr>
+<td align="center">ppoll</td>
+<td align="center">271</td>
+</tr>
+<tr>
+<td align="center">unshare</td>
+<td align="center">272</td>
+</tr>
+<tr>
+<td align="center">set_robust_list</td>
+<td align="center">273</td>
+</tr>
+<tr>
+<td align="center">get_robust_list</td>
+<td align="center">274</td>
+</tr>
+<tr>
+<td align="center">splice</td>
+<td align="center">275</td>
+</tr>
+<tr>
+<td align="center">tee</td>
+<td align="center">276</td>
+</tr>
+<tr>
+<td align="center">sync_file_range</td>
+<td align="center">277</td>
+</tr>
+<tr>
+<td align="center">vmsplice</td>
+<td align="center">278</td>
+</tr>
+<tr>
+<td align="center">move_pages</td>
+<td align="center">279</td>
+</tr>
+<tr>
+<td align="center">utimensat</td>
+<td align="center">280</td>
+</tr>
+<tr>
+<td align="center">epoll_pwait</td>
+<td align="center">281</td>
+</tr>
+<tr>
+<td align="center">signalfd</td>
+<td align="center">282</td>
+</tr>
+<tr>
+<td align="center">timerfd_create</td>
+<td align="center">283</td>
+</tr>
+<tr>
+<td align="center">eventfd</td>
+<td align="center">284</td>
+</tr>
+<tr>
+<td align="center">fallocate</td>
+<td align="center">285</td>
+</tr>
+<tr>
+<td align="center">timerfd_settime</td>
+<td align="center">286</td>
+</tr>
+<tr>
+<td align="center">timerfd_gettime</td>
+<td align="center">287</td>
+</tr>
+<tr>
+<td align="center">accept4</td>
+<td align="center">288</td>
+</tr>
+<tr>
+<td align="center">signalfd4</td>
+<td align="center">289</td>
+</tr>
+<tr>
+<td align="center">eventfd2</td>
+<td align="center">290</td>
+</tr>
+<tr>
+<td align="center">epoll_create1</td>
+<td align="center">291</td>
+</tr>
+<tr>
+<td align="center">dup3</td>
+<td align="center">292</td>
+</tr>
+<tr>
+<td align="center">pipe2</td>
+<td align="center">293</td>
+</tr>
+<tr>
+<td align="center">inotify_init1</td>
+<td align="center">294</td>
+</tr>
+<tr>
+<td align="center">preadv</td>
+<td align="center">295</td>
+</tr>
+<tr>
+<td align="center">pwritev</td>
+<td align="center">296</td>
+</tr>
+<tr>
+<td align="center">rt_tgsigqueueinfo</td>
+<td align="center">297</td>
+</tr>
+<tr>
+<td align="center">perf_event_open</td>
+<td align="center">298</td>
+</tr>
+<tr>
+<td align="center">recvmmsg</td>
+<td align="center">299</td>
+</tr>
+<tr>
+<td align="center">fanotify_init</td>
+<td align="center">300</td>
+</tr>
+<tr>
+<td align="center">fanotify_mark</td>
+<td align="center">301</td>
+</tr>
+<tr>
+<td align="center">prlimit64</td>
+<td align="center">302</td>
+</tr>
+<tr>
+<td align="center">name_to_handle_at</td>
+<td align="center">303</td>
+</tr>
+<tr>
+<td align="center">open_by_handle_at</td>
+<td align="center">304</td>
+</tr>
+<tr>
+<td align="center">clock_adjtime</td>
+<td align="center">305</td>
+</tr>
+<tr>
+<td align="center">syncfs</td>
+<td align="center">306</td>
+</tr>
+<tr>
+<td align="center">sendmmsg</td>
+<td align="center">307</td>
+</tr>
+<tr>
+<td align="center">set_ns</td>
+<td align="center">308</td>
+</tr>
+<tr>
+<td align="center">get_cpu</td>
+<td align="center">309</td>
+</tr>
+<tr>
+<td align="center">process_vm_readv</td>
+<td align="center">310</td>
+</tr>
+<tr>
+<td align="center">process_vm_writev</td>
+<td align="center">311</td>
+</tr>
+</tbody></table>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://blog.z3phyr.site">Zephyr</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://blog.z3phyr.site/posts/Linux%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E5%8F%B7.html">https://blog.z3phyr.site/posts/Linux系统调用号.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://blog.z3phyr.site" target="_blank">Zephyr's Repository</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Pwn/">Pwn</a><a class="post-meta__tags" href="/tags/Linux/">Linux</a></div><div class="post-share"><div class="social-share" data-image="/img/avatar.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related  no-desc" href="/posts/MD5.html" title="MD5"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">MD5</div></div></div></a><a class="pagination-related  no-desc" href="/posts/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5.html" title="SSTI模板注入"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">SSTI模板注入</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related no-desc" href="/posts/mrctf2020_shellcode.html" title="mrctf2020 shellcode"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-04-04</div><div class="info-item-2">mrctf2020 shellcode</div></div></div></a><a class="pagination-related no-desc" href="/posts/gyctf_2020_borrowstack.html" title="gyctf 2020 borrowstack"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-04-08</div><div class="info-item-2">gyctf 2020 borrowstack</div></div></div></a><a class="pagination-related no-desc" href="/posts/jarvisoj_test_your_memory.html" title="jarvisoj test your memory"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-04-03</div><div class="info-item-2">jarvisoj test your memory</div></div></div></a><a class="pagination-related no-desc" href="/posts/bbys_tu_2016.html" title="bbys tu 2016"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-04-06</div><div class="info-item-2">bbys tu 2016</div></div></div></a><a class="pagination-related no-desc" href="/posts/jarvisoj_fm.html" title="jarvisoj fm"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-03-23</div><div class="info-item-2">jarvisoj fm</div></div></div></a><a class="pagination-related no-desc" href="/posts/hitcontraining_uaf.html" title="hitcontraining uaf"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-04-11</div><div class="info-item-2">hitcontraining uaf</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/loading.gif" data-lazy-src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Zephyr</div><div class="author-info-description">偷得浮生半日闲</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">120</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">46</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Zephyrccc"><i class="fab fa-github"></i><span>Github</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/Zephyrccc" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:ZephyrChen@outlook.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到Zephyrの自留地！请各位大大们评论时注意文明用语哦~</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E5%8F%B7"><span class="toc-number">1.</span> <span class="toc-text">系统调用号</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-number">1.1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Linux"><span class="toc-number">1.2.</span> <span class="toc-text">Linux</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#32%E4%BD%8D"><span class="toc-number">1.2.1.</span> <span class="toc-text">32位</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#64%E4%BD%8D"><span class="toc-number">1.2.2.</span> <span class="toc-text">64位</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/Check_File.html" title="检测脚本">检测脚本</a><time datetime="2025-07-30T02:37:00.000Z" title="发表于 2025-07-30 10:37:00">2025-07-30</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/Oracle-Rectification.html" title="Oracle整改">Oracle整改</a><time datetime="2025-01-17T07:02:15.000Z" title="发表于 2025-01-17 15:02:15">2025-01-17</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/Linux-Rectification.html" title="Linux整改">Linux整改</a><time datetime="2025-01-06T07:32:15.000Z" title="发表于 2025-01-06 15:32:15">2025-01-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/Windows-Rectification.html" title="Windows整改">Windows整改</a><time datetime="2025-01-02T07:30:15.000Z" title="发表于 2025-01-02 15:30:15">2025-01-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/MySQL.html" title="MySQL">MySQL</a><time datetime="2024-11-05T02:00:00.000Z" title="发表于 2024-11-05 10:00:00">2024-11-05</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/img/default-img.jpg);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Zephyr</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5"></script><script src="/js/main.js?v=5.5.5"></script><script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/dist/medium-zoom.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@19.1.3/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23li9IpxWCrItZETRy',
+      clientSecret: '892f854e3a8fbe451ddac4d931bcd0f85f046c87',
+      repo: 'Zephyrccc.github.io',
+      owner: 'Zephyrccc',
+      admin: ['Zephyrccc'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || '5c1d7628edf69ab802e5b67e2a882c35'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/fireworks.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索内容..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.5"></script></div></div></body></html>

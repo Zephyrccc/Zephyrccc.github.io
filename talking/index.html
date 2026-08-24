@@ -1,0 +1,443 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>说说 | Zephyr's Repository</title><meta name="author" content="Zephyr"><meta name="copyright" content="Zephyr"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="偷得浮生半日闲">
+<meta property="og:type" content="website">
+<meta property="og:title" content="说说">
+<meta property="og:url" content="https://blog.z3phyr.site/talking/index.html">
+<meta property="og:site_name" content="Zephyr&#39;s Repository">
+<meta property="og:description" content="偷得浮生半日闲">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.z3phyr.site/img/avatar.png">
+<meta property="article:published_time" content="2026-06-05T14:03:54.000Z">
+<meta property="article:modified_time" content="2026-08-24T06:11:42.435Z">
+<meta property="article:author" content="Zephyr">
+<meta property="article:tag" content="Zephyr,网络安全,等级保护">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.z3phyr.site/img/avatar.png"><script type="application/ld+json"></script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://blog.z3phyr.site/talking/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//static.cloudflareinsights.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.5"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.2.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script defer="defer" data-pjax="data-pjax" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon="{&quot;token&quot;: &quot;bb47dbec9d394a07a3a5d0e80124d805&quot;}"></script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":false,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'medium_zoom',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-center"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '说说',
+  isHighlightShrink: false,
+  isToc: false,
+  pageType: 'shuoshuo'
+}</script><meta name="generator" content="Hexo 8.1.2"></head><body><div class="bg-animation" id="web_bg" style="background-image: url(/img/default-img.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/loading.gif" data-lazy-src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">120</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">46</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-file"></i><span> 笔记</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E7%AC%94%E8%AE%B0/Pwn/"><i class="fa-fw fas fa-square-binary"></i><span> Pwn</span></a></li><li><a class="site-page child" href="/categories/%E7%AC%94%E8%AE%B0/Web/"><i class="fa-fw fas fa-globe"></i><span> Web</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-code"></i><span> 技术</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E6%8A%80%E6%9C%AF/Pwn/"><i class="fa-fw fas fa-square-binary"></i><span> Pwn</span></a></li><li><a class="site-page child" href="/categories/%E6%8A%80%E6%9C%AF/Web/"><i class="fa-fw fas fa-globe"></i><span> Web</span></a></li><li><a class="site-page child" href="/categories/%E6%8A%80%E6%9C%AF/Crypto/"><i class="fa-fw fas fa-key"></i><span> Crypto</span></a></li><li><a class="site-page child" href="/categories/%E6%8A%80%E6%9C%AF/%E7%AD%89%E4%BF%9D/"><i class="fa-fw fas fa-shield-alt"></i><span> 等保</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 索引</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/talking/"><i class="fa-fw fas fa-pen-nib"></i><span> 说说</span></a></li><li><a class="site-page child" href="/favorites/"><i class="fa-fw fas fa-bookmark"></i><span> 收藏</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" href="/messageboard/"><i class="fa-fw fas fa-comment"></i><span> 留言板</span></a></div></div></div></div><div class="page type-shuoshuo" id="body-wrap"><header class="not-home-page" id="page-header" style="background-image: url(/img/default-img.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Zephyr's Repository</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-file"></i><span> 笔记</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E7%AC%94%E8%AE%B0/Pwn/"><i class="fa-fw fas fa-square-binary"></i><span> Pwn</span></a></li><li><a class="site-page child" href="/categories/%E7%AC%94%E8%AE%B0/Web/"><i class="fa-fw fas fa-globe"></i><span> Web</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-code"></i><span> 技术</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E6%8A%80%E6%9C%AF/Pwn/"><i class="fa-fw fas fa-square-binary"></i><span> Pwn</span></a></li><li><a class="site-page child" href="/categories/%E6%8A%80%E6%9C%AF/Web/"><i class="fa-fw fas fa-globe"></i><span> Web</span></a></li><li><a class="site-page child" href="/categories/%E6%8A%80%E6%9C%AF/Crypto/"><i class="fa-fw fas fa-key"></i><span> Crypto</span></a></li><li><a class="site-page child" href="/categories/%E6%8A%80%E6%9C%AF/%E7%AD%89%E4%BF%9D/"><i class="fa-fw fas fa-shield-alt"></i><span> 等保</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 索引</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/talking/"><i class="fa-fw fas fa-pen-nib"></i><span> 说说</span></a></li><li><a class="site-page child" href="/favorites/"><i class="fa-fw fas fa-bookmark"></i><span> 收藏</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" href="/messageboard/"><i class="fa-fw fas fa-comment"></i><span> 留言板</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="page-site-info"><h1 id="site-title">说说</h1></div></header><main class="layout hide-aside" id="content-inner"><div class="nc" id="page"><div id="article-container"><script type="application/json" id="shuoshuo-data">[{"date":"2026-06-05 21:30:00","content":"\u003cp\u003e佛山今晚晚霞绝了 🌇\u003c/p\u003e\n"}]</script><script>(() => {
+  const limitConfig = {}
+
+  const sortDataByDate = data => data.sort((a, b) => new Date(b.date) - new Date(a.date))
+
+  const filterDataByLimit = (data, limit) => {
+    if (!limit || !limit.type) return data
+    if (limit.type === 'num') return data.slice(0, limit.value)
+    if (limit.type === 'date') {
+      const limitDate = new Date(limit.value)
+      return data.filter(item => new Date(item.date) >= limitDate)
+    }
+    return data
+  };
+
+  const formatToTimeZone = (date) => {
+    const fullDate = date.length === 10 ? `${date} 00:00:00` : date
+    const visitorTimeZone = 'asia/shanghai' || Intl.DateTimeFormat().resolvedOptions().timeZone
+    const options = {
+      timeZone: visitorTimeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    }
+    const [day, month, year, hour, minute, second] = new Intl.DateTimeFormat('en-GB', options)
+      .format(new Date(fullDate))
+      .match(/\d+/g)
+    return `${year}-${month}-${day} ${hour}:${minute}:${second}`
+  }
+
+  const addLazyload = str => {
+    const config = {
+      enable: true,
+      native: false,
+      field: 'site',
+      placeholder: '/img/loading.gif',
+    }
+
+    if (!config.enable || config.field !== 'site') return str
+    const parser = new DOMParser()
+    const doc = parser.parseFromString(str, 'text/html')
+    const images = doc.querySelectorAll('img')
+
+    images.forEach(img => {
+      if (config.native) {
+        img.setAttribute('loading', 'lazy')
+      } else {
+        const src = img.getAttribute('src')
+        img.setAttribute('data-lazy-src', src)
+
+        if (config.placeholder) {
+          img.setAttribute('src', config.placeholder)
+        } else {
+          img.removeAttribute('src')
+        }
+      }
+    })
+    return doc.body.innerHTML
+  }
+
+  let currentPage = 1
+  const itemsPerPage = 8
+  let totalPages = 0
+  let data = []
+  let inputEventsAttached = false // Flag to mark if input event listeners have been added
+
+  const renderData = (dataSlice) => {
+    const content = dataSlice.map(item => {
+      const formattedDate = formatToTimeZone(item.date)
+      const tags = item.tags && item.tags.map(tag => `<span class="shuoshuo-tag">${tag}</span>`).join('') || ''
+      const commentButton = item.key && false
+        ? `<div class="shuoshuo-comment-btn" onclick="addCommentToShuoshuo(event)">
+            <i class="fa-solid fa-comments"></i>
+          </div>`
+        : ''
+      const commentContainer = item.key
+        ? `<div class="shuoshuo-comment no-comment" data-key="${item.key}"></div>`
+        : ''
+
+      return `
+        <div class="shuoshuo-item">
+          <div class="container">
+            <div class="shuoshuo-item-header">
+              <div class="shuoshuo-avatar">
+                <img class="no-lightbox" src="/img/loading.gif" data-lazy-src="${item.avatar || '/img/avatar.png'}">
+              </div>
+              <div class="shuoshuo-info">
+                <div class="shuoshuo-author">${item.author || 'Zephyr'}</div>
+                <time class="shuoshuo-date" title="${formattedDate}">
+                  ${btf.diffDate(formattedDate, true)}
+                </time>
+              </div>
+            </div>
+            <div class="shuoshuo-content">${addLazyload(item.content)}</div>
+            <div class="shuoshuo-footer ${tags ? 'flex-between' : 'flex-end'}">
+              ${tags ? `<div class="shuoshuo-tags">${tags}</div>` : ''}
+              ${commentButton}
+            </div>
+          </div>
+          ${commentContainer}
+        </div>`
+    }).join('')
+
+    const container = document.getElementById('article-container')
+    container.innerHTML = content
+
+    window.lazyLoadInstance && window.lazyLoadInstance.update()
+    btf.loadLightbox(document.querySelectorAll('#article-container img:not(.no-lightbox)'))
+  }
+
+  const renderNavigation = () => {
+    const container = document.getElementById('article-container')
+    const existingNav = container.nextElementSibling
+    if (existingNav && existingNav.classList.contains('shuoshuo-navigation')) {
+      existingNav.remove()
+    }
+
+    const pageInfoTemplate = '第 ${current} 页 / 共 ${total} 页'
+    const pageInfoText = pageInfoTemplate
+      .replace(/\$\{current}/g, currentPage)
+      .replace(/\$\{total}/g, totalPages)
+
+    const navHtml = `
+      <div class="shuoshuo-navigation">
+        <button onclick="window.shuoshuoPrevPage()" ${currentPage === 1 ? 'disabled' : ''}><i class="fa-solid fa-chevron-left"></i></button>
+        <span class="shuoshuo-page-info">${pageInfoText}</span>
+        <input type="number" class="shuoshuo-page-input" min="1" max="${totalPages}" placeholder="${currentPage}" onkeydown="window.shuoshuoHandleKeyDown(event)">
+        <button onclick="window.shuoshuoNextPage()" ${currentPage === totalPages ? 'disabled' : ''}><i class="fa-solid fa-chevron-right"></i></button>
+      </div>
+    `
+    container.insertAdjacentHTML('afterend', navHtml)
+
+    // Add input validation event listeners (only once)
+    if (!inputEventsAttached) {
+      setTimeout(() => {
+        const input = document.querySelector('.shuoshuo-page-input')
+        if (input) {
+          // Clear placeholder when clicking the input box
+          input.addEventListener('focus', (event) => {
+            event.target.placeholder = ''
+          })
+
+          // Restore placeholder if no content when losing focus
+          input.addEventListener('blur', (event) => {
+            if (!event.target.value.trim()) {
+              event.target.placeholder = currentPage
+            }
+          })
+
+          input.addEventListener('input', (event) => {
+            const value = parseInt(event.target.value) || 0
+            let wasInvalid = false
+
+            if (value > totalPages) {
+              event.target.value = totalPages
+              wasInvalid = true
+            } else if (value < 1 && event.target.value !== '') {
+              event.target.value = 1
+              wasInvalid = true
+            }
+
+            // If value is corrected, show red and shake effect
+            if (wasInvalid) {
+              event.target.classList.add('invalid')
+              setTimeout(() => {
+                event.target.classList.remove('invalid')
+              }, 500)
+            }
+          })
+
+          inputEventsAttached = true // Mark that event listeners have been added
+        }
+      }, 0)
+    }
+  }
+
+  const renderPage = (page) => {
+    const start = (page - 1) * itemsPerPage
+    const end = start + itemsPerPage
+    const pageData = data.slice(start, end)
+    renderData(pageData)
+    renderNavigation()
+  }
+
+  window.shuoshuoPrevPage = () => {
+    if (currentPage > 1) {
+      currentPage--
+      renderPage(currentPage)
+    }
+  }
+
+  window.shuoshuoNextPage = () => {
+    if (currentPage < totalPages) {
+      currentPage++
+      renderPage(currentPage)
+    }
+  }
+
+  window.shuoshuoGoToPage = (page) => {
+    if (typeof page === 'number') {
+      // Directly jump to the specified page
+      if (page >= 1 && page <= totalPages && page !== currentPage) {
+        currentPage = page
+        renderPage(currentPage)
+      }
+    } else {
+      // Get page from input box
+      const input = document.querySelector('.shuoshuo-page-input')
+      const inputValue = input.value.trim()
+      const inputPage = inputValue === '' ? currentPage : parseInt(inputValue)
+      if (inputPage >= 1 && inputPage <= totalPages && inputPage !== currentPage) {
+        currentPage = inputPage
+        renderPage(currentPage)
+      } else if (inputValue === '') {
+        // If input box is empty, re-render current page (update placeholder)
+        renderPage(currentPage)
+      }
+    }
+  }
+
+  window.shuoshuoHandleKeyDown = (event) => {
+    const input = event.target
+    const value = input.value + event.key
+
+    // Allow delete, arrow keys, backspace, etc.
+    if (event.key === 'Enter' || event.key === 'Backspace' || event.key === 'Delete' ||
+        event.key === 'ArrowLeft' || event.key === 'ArrowRight' ||
+        event.key === 'Tab' || event.ctrlKey || event.metaKey) {
+      if (event.key === 'Enter') {
+        window.shuoshuoGoToPage()
+      }
+      return
+    }
+
+    // Only allow numbers
+    if (!/^\d$/.test(event.key)) {
+      event.preventDefault()
+      return
+    }
+
+    // Check if the value after input exceeds the range
+    const newValue = parseInt(value) || 0
+    if (newValue > totalPages || (value.length > 1 && newValue === 0)) {
+      event.preventDefault()
+      // Add red and shake effect
+      input.classList.add('invalid')
+      setTimeout(() => {
+        input.classList.remove('invalid')
+      }, 500)
+    }
+  }
+
+  const loadShuoshuo = async () => {
+    try {
+      let originData = []
+      if (false) {
+        const response = await fetch('/')
+        originData = await response.json()
+      } else {
+        const dataElement = document.getElementById('shuoshuo-data')
+        originData = dataElement ? JSON.parse(dataElement.textContent) : []
+      }
+
+      data = filterDataByLimit(sortDataByDate(originData), limitConfig)
+
+      totalPages = Math.ceil(data.length / itemsPerPage)
+
+      renderPage(currentPage)
+    } catch (error) {
+      console.error(error)
+    }
+  };
+
+  window.pjax ? loadShuoshuo() : window.addEventListener('load', loadShuoshuo)
+})()</script></div></div></main><footer id="footer" style="background-image: url(/img/default-img.jpg);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2021 - 2026 By Zephyr</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.5"></script><script src="/js/main.js?v=5.5.5"></script><script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/dist/medium-zoom.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@19.1.3/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/fireworks.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索内容..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.5"></script></div></div></body></html>
